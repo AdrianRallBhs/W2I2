@@ -391,6 +391,7 @@ export async function runRepoInfo() {
 
     const output: Output = {
         repository: {
+            owner: '',
             name: repo,
             currentReleaseTag: '',
             license: '',
