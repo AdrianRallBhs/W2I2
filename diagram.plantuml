@@ -1,0 +1,201 @@
+' @startjson
+' {
+'   "repository": {
+'     "name": "string",
+'     "currentReleaseTag": "string",
+'     "license": "string",
+'     "sha": "string"
+'   },
+'   "npmPackages": [
+'     {
+'       "name": "string",
+'       "version": "string",
+'       "repoName": "string",
+'       "owner": "string"
+'     }
+'   ],
+'   "nugetPackages": [
+   
+'     {
+'       "project": "string",
+'       "source": "string",
+'       "packageName": "string",
+'       "currentVersion": "string",
+'       "resolvedVersion": "sring",
+'       "latestVersion": "string"
+'     }
+'   ],
+'   "submodules": [
+
+'     {
+'       "sha": "string",
+'       "submoduleName": "string",
+'       "referenceBranch": "string"
+'     }
+'   ],
+'   "updateStrategy": "enum"
+' }
+' @endjson
+
+@startjson
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "repository": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "currentReleaseTag": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        },
+        "sha": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "currentReleaseTag",
+        "license",
+        "sha"
+      ]
+    },
+    "npmPackages": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "version": {
+              "type": "string"
+            },
+            "repoName": {
+              "type": "string"
+            },
+            "owner": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "version",
+            "repoName",
+            "owner"
+          ]
+        }
+      ]
+    },
+    "nugetPackages": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "project": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string"
+            },
+            "packageName": {
+              "type": "string"
+            },
+            "currentVersion": {
+              "type": "string"
+            },
+            "resolvedVersion": {
+              "type": "string"
+            },
+            "latestVersion": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "project",
+            "source",
+            "packageName",
+            "currentVersion",
+            "resolvedVersion",
+            "latestVersion"
+          ]
+        }
+      ]
+    },
+    "submodules": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "sha": {
+              "type": "string"
+            },
+            "submoduleName": {
+              "type": "string"
+            },
+            "referenceBranch": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "sha",
+            "submoduleName",
+            "referenceBranch"
+          ]
+        }
+      ]
+    },
+    "updateStrategy": {
+      "type": "string"
+    },
+    "dependentProjects": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "owner": {
+              "type": "string"
+            },
+            "repository": {
+              "type": "string"
+            },
+            "usageType": {
+              "type": "string"
+            },
+            "versionRange": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "owner",
+            "repository",
+            "usageType",
+            "versionRange"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "repository",
+    "npmPackages",
+    "nugetPackages",
+    "submodules",
+    "updateStrategy",
+    "dependentProjects"
+  ]
+}
+@endjson
