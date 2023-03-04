@@ -128,34 +128,21 @@ interface NPMPackageInfo {
 
 // =========================================
 
-function getNpmRegistries(): { [key: string]: string } {
-    const output = execSync('npm config ls --json').toString();
-    const config = JSON.parse(output);
-    const registries: { [key: string]: string } = {};
-  
-    Object.keys(config).forEach((key) => {
-      if (key.endsWith(':registry')) {
-        const scope = key.split(':')[0];
-        const registry = config[key];
-        registries[scope] = registry;
-      }
+
+function listNpmRegistries(): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      exec('npm config get registry', (err, stdout, stderr) => {
+        if (err) {
+          reject(err);
+        } else {
+          const registries = stdout.split('\n').filter(registry => registry.trim() !== '');
+          resolve(registries);
+        }
+      });
     });
-  
-    return registries;
-  }
-  
-  function getNpmSourceRegistryUrl(source: string): string | undefined {
-    const registries = getNpmRegistries();
-    const sources = Object.keys(registries).filter((key) => {
-      const registry = registries[key];
-      return registry === source;
-    });
-  
-    return sources.length > 0 ? registries[sources[0]] : undefined;
   }
 
-  const sourceRegistryUrl = getNpmSourceRegistryUrl('https://registry.npmjs.org');
-  console.log('Source registry URL:', sourceRegistryUrl);
+  console.log(listNpmRegistries());
 
 // //========================works fine=======================================
 
