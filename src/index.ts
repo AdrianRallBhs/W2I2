@@ -52,6 +52,12 @@ interface NPMPackage {
   owner: string;
 }
 
+interface NPMPacko {
+    name: string;
+    version: string;
+    latestVersion: string;
+  }
+
 
 
 // interface NPMPackage {
@@ -197,6 +203,36 @@ async function getAllPackages(): Promise<string[]> {
   getLatestVersions(list)
   .then(latestVersions => console.log(latestVersions))
   .catch(err => console.error(err));
+// =========================================
+export async function getAllPackos(): Promise<NPMPacko[]> {
+    const packageJson = require('../package.json');
+    const packages = packageJson.dependencies;
+    const packageList: NPMPacko[] = [];
+  
+    for (const name in packages) {
+      const version = packages[name];
+      packageList.push({
+        name,
+        version,
+        latestVersion: '',
+      });
+    }
+    return getLatestVersions(packageList.map(pkg => pkg.name))
+    .then(latestVersions => {
+      latestVersions.forEach((latestVersion, index) => {
+        packageList[index].latestVersion = latestVersion;
+      });
+      return packageList;
+    })
+    .catch(err => {
+      console.error('Error getting latest versions', err);
+      return packageList;
+    });
+}
+
+
+getAllPackos()
+  
 
 // ========================================
 
