@@ -31,6 +31,7 @@ const updateStrategy = core.getInput('updateStrategy', { required: false }) || '
 
 
 interface Repository {
+  owner: any;
   name: string;
   currentReleaseTag: string;
   license: string;
@@ -155,6 +156,33 @@ interface NPMPackageSmall {
   version: string;
 }
 
+
+//=========================================
+
+interface DependentProject {
+    name: string;
+    owner: string;
+  }
+
+  import { Octokit } from "@octokit/rest";
+  
+  const octokit = new Octokit({
+    auth: "YOUR_GITHUB_ACCESS_TOKEN",
+  });
+  
+  async function getDependentProjects(repository: Repository): Promise<DependentProject[]> {
+    const query = `depends on:${repository.owner}/${repository.name}`;
+    const { data } = await octokit.search.repos({ q: query });
+    return data.items.map((item) => ({ name: item.name, owner: repository.owner }));
+  }
+
+  
+
+  
+  
+  
+  
+//===========================  
 
   interface NPMPackageSource {
     name: string;
