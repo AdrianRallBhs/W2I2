@@ -155,17 +155,57 @@ interface NPMPackageSmall {
   version: string;
 }
 
-async function getAllPackages(): Promise<string[]> {
-  try {
-    const { stdout } = await exec('npm ls --json --depth=0 --parseable');
-    const dependencies = packageJson.dependencies;
-    const packageList = Object.keys(dependencies);
-    return packageList;
-  } catch (error) {
-    console.error(`Failed to get packages: ${error}`);
-    return [];
+
+  interface NPMPackageSource {
+    name: string;
+    version: string;
+    source: string;
   }
-}
+  
+  async function getAllPackages(): Promise<NPMPackageSource[]> {
+    try {
+      const { stdout } = await exec('npm ls --json --depth=0 --parseable');
+      const dependencies = packageJson.dependencies;
+      const packageList = Object.keys(dependencies).map((name) => ({
+        name,
+        version: dependencies[name],
+        source: packageJson._resolved.split(':')[0],
+      }));
+      return packageList;
+    } catch (error) {
+      console.error(`Failed to get packages: ${error}`);
+      return [];
+    }
+  }
+  
+  async function groupPackagesBySource(): Promise<{ [key: string]: string[] }> {
+    try {
+      const packages = await getAllPackages();
+      const sources: { [key: string]: string[] } = {};
+      for (const pack of packages) {
+        if (!sources[pack.source]) {
+          sources[pack.source] = [];
+        }
+        sources[pack.source].push(`${pack.name}:${pack.version}`);
+      }
+      return sources;
+    } catch (error) {
+      console.error(`Failed to group packages by source: ${error}`);
+      return {};
+    }
+  }
+
+// async function getAllPackages(): Promise<string[]> {
+//   try {
+//     const { stdout } = await exec('npm ls --json --depth=0 --parseable');
+//     const dependencies = packageJson.dependencies;
+//     const packageList = Object.keys(dependencies);
+//     return packageList;
+//   } catch (error) {
+//     console.error(`Failed to get packages: ${error}`);
+//     return [];
+//   }
+// }
 
   getAllPackages()
   .then(packageList => console.log(packageList))
@@ -203,6 +243,9 @@ async function getAllPackages(): Promise<string[]> {
   getLatestVersions(list)
   .then(latestVersions => console.log(latestVersions))
   .catch(err => console.error(err));
+
+
+  groupPackagesBySource();
 // =========================================
 export async function getAllPackos(): Promise<NPMPacko[]> {
     const packageJson = require('../package.json');
