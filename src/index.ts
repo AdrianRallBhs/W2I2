@@ -232,6 +232,8 @@ export async function getAllPackos(): Promise<NPMPacko[]> {
 
 
 getAllPackos()
+  .then((packos) => console.log(packos))
+  .catch((err) => console.error(err));
   
 
 // ========================================
