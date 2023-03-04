@@ -161,7 +161,9 @@ async function getAllPackages(): Promise<string[]> {
   }
 }
 
-  getAllPackages();
+  getAllPackages()
+  .then(packageList => console.log(packageList))
+  .catch(err => console.error(err))
 
 // ========================================
 
