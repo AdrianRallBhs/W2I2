@@ -178,22 +178,22 @@ interface NPMPackageSmall {
     }
   }
   
-  async function groupPackagesBySource(): Promise<{ [key: string]: string[] }> {
-    try {
-      const packages = await getAllPackages();
-      const sources: { [key: string]: string[] } = {};
-      for (const pack of packages) {
-        if (!sources[pack.source]) {
-          sources[pack.source] = [];
-        }
-        sources[pack.source].push(`${pack.name}:${pack.version}`);
-      }
-      return sources;
-    } catch (error) {
-      console.error(`Failed to group packages by source: ${error}`);
-      return {};
-    }
-  }
+//   async function groupPackagesBySource(): Promise<{ [key: string]: string[] }> {
+//     try {
+//       const packages = await getAllPackages();
+//       const sources: { [key: string]: string[] } = {};
+//       for (const pack of packages) {
+//         if (!sources[pack.source]) {
+//           sources[pack.source] = [];
+//         }
+//         sources[pack.source].push(`${pack.name}:${pack.version}`);
+//       }
+//       return sources;
+//     } catch (error) {
+//       console.error(`Failed to group packages by source: ${error}`);
+//       return {};
+//     }
+//   }
 
 // async function getAllPackages(): Promise<string[]> {
 //   try {
@@ -245,9 +245,7 @@ interface NPMPackageSmall {
   .catch(err => console.error(err));
 
 
-  groupPackagesBySource()
-  .then(sources => console.log(sources))
-  .catch(err => console.error(err))
+
 // =========================================
 export async function getAllPackos(): Promise<NPMPacko[]> {
     const packageJson = require('../package.json');
