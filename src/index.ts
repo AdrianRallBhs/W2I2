@@ -154,8 +154,8 @@ function getNpmRegistries(): { [key: string]: string } {
     return sources.length > 0 ? registries[sources[0]] : undefined;
   }
 
-const allRegistries = getNpmRegistries();
-console.log('All registries:', allRegistries);
+  const sourceRegistryUrl = getNpmSourceRegistryUrl('https://registry.npmjs.org');
+  console.log('Source registry URL:', sourceRegistryUrl);
 
 // //========================works fine=======================================
 
