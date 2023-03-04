@@ -165,6 +165,39 @@ async function getAllPackages(): Promise<string[]> {
   .then(packageList => console.log(packageList))
   .catch(err => console.error(err))
 
+
+  async function getLatestVersions(packageList: string[]): Promise<string[]> {
+    const latestVersions: string[] = [];
+  
+    for (const packageName of packageList) {
+      const command = `npm show ${packageName} version`;
+      const latestVersion = await execCommand(command);
+  
+      latestVersions.push(`${packageName}: ${latestVersion}`);
+    }
+  
+    return latestVersions;
+  }
+  
+  async function execCommand(command: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      exec(command, (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+        } else if (stderr) {
+          reject(stderr);
+        } else {
+          resolve(stdout.trim());
+        }
+      });
+    });
+  }
+
+  let list = [ '@actions/core', '@actions/github' ]
+  getLatestVersions(list)
+  .then(latestVersions => console.log(latestVersions))
+  .catch(err => console.error(err));
+
 // ========================================
 
 
