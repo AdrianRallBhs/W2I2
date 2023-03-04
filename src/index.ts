@@ -376,12 +376,12 @@ export async function getOutdatedPackages(projectList: string[], sourceList: str
             outdatedPackages.push({ project, source, packageName, currentVersion, resolvedVersion, latestVersion });
           }
         } catch (error: Error | any) {
-          // If there is no csproj-file in the repository, skip the iteration
-          if (error.message.includes('A project or solution file could not be found')) {
+          const errorMessage = error.stderr.toString().trim();
+          if (errorMessage.includes('A project or solution file could not be found')) {
             continue;
+          } else {
+            throw new Error(`Error while checking outdated packages in project ${project} and source ${source}: ${errorMessage}`);
           }
-          // If there is another error, re-throw it
-          throw error;
         }
       }
     }
