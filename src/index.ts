@@ -129,7 +129,7 @@ interface NPMPackageInfo {
 // =========================================
 
 
-function listNpmRegistries(): Promise<string[]> {
+async function listNpmRegistries(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       exec('npm config get registry', (err, stdout, stderr) => {
         if (err) {
