@@ -31,33 +31,33 @@ const updateStrategy = core.getInput('updateStrategy', { required: false }) || '
 
 
 interface Repository {
-  owner: any;
-  name: string;
-  currentReleaseTag: string;
-  license: string;
-  sha: string;
+    owner: any;
+    name: string;
+    currentReleaseTag: string;
+    license: string;
+    sha: string;
 }
 
 interface Submodule {
-  sha: string;
-  submoduleName: string;
-  referenceBranch: string;
+    sha: string;
+    submoduleName: string;
+    referenceBranch: string;
 
 }
 
 interface NPMPackage {
-  name: string;
-  //current version
-  version: string;
-  repoName: string;
-  owner: string;
+    name: string;
+    //current version
+    version: string;
+    repoName: string;
+    owner: string;
 }
 
 interface NPMPacko {
     name: string;
     version: string;
     latestVersion: string;
-  }
+}
 
 
 
@@ -73,29 +73,29 @@ interface NPMPacko {
 
 
 
-  interface NugetPackageInfo {
+interface NugetPackageInfo {
     project: string;
     source: string;
     packageName: string;
     currentVersion: string;
     resolvedVersion: string;
     latestVersion: string;
-  }
+}
 
 
 interface Output {
-  repository: Repository;
-  npmPackages: NPMPackage[];
-  nugetPackages: NugetPackageInfo[];
-  submodules: Submodule[];
-  updateStrategy: string;
+    repository: Repository;
+    npmPackages: NPMPackage[];
+    nugetPackages: NugetPackageInfo[];
+    submodules: Submodule[];
+    updateStrategy: string;
 }
 
 
 interface NugetPackage {
-  Name: string;
-  Version: string;
-  Source: string;
+    Name: string;
+    Version: string;
+    Source: string;
 }
 
 // interface NugetPackageInfo {
@@ -108,32 +108,32 @@ interface NugetPackage {
 // };
 
 interface PackageInfo {
-  nugetName: string;
-  nugetVersion: string;
-  nugetSource: string
+    nugetName: string;
+    nugetVersion: string;
+    nugetSource: string
 }
 
 interface Source {
-  name: string;
-  value: string;
+    name: string;
+    value: string;
 }
 
 interface Submodule {
-  sha: string;
-  submoduleName: string;
-  referenceBranch: string;
+    sha: string;
+    submoduleName: string;
+    referenceBranch: string;
 
 }
 
 
 // // ===========================works ===========================================
 interface NugetPackageInfo {
-  project: string;
-  source: string;
-  packageName: string;
-  currentVersion: string;
-  resolvedVersion: string;
-  latestVersion: string;
+    project: string;
+    source: string;
+    packageName: string;
+    currentVersion: string;
+    resolvedVersion: string;
+    latestVersion: string;
 }
 
 
@@ -145,15 +145,15 @@ interface NPMPackageInfo {
     currentVersion: string;
     wantedVersion: string;
     latestVersion: string;
-  }
+}
 
 
 // =========================================
 
 
 interface NPMPackageSmall {
-  name: string;
-  version: string;
+    name: string;
+    version: string;
 }
 
 
@@ -162,50 +162,51 @@ interface NPMPackageSmall {
 interface DependentProject {
     name: string;
     owner: string;
-  }
+}
 
-  import { Octokit } from "@octokit/rest";
-  
-  const octokit = new Octokit({
-    auth: "YOUR_GITHUB_ACCESS_TOKEN",
-  });
-  
-  async function getDependentProjects(repository: Repository): Promise<DependentProject[]> {
+import { Octokit } from "@octokit/rest";
+const token = core.getInput("github-token");
+
+const octokit = new Octokit({
+    auth: token,
+});
+
+async function getDependentProjects(repository: Repository): Promise<DependentProject[]> {
     const query = `depends on:${repository.owner}/${repository.name}`;
     const { data } = await octokit.search.repos({ q: query });
     return data.items.map((item) => ({ name: item.name, owner: repository.owner }));
-  }
+}
 
-  
 
-  
-  
-  
-  
+
+
+
+
+
 //===========================  
 
-  interface NPMPackageSource {
+interface NPMPackageSource {
     name: string;
     version: string;
     source: string;
-  }
-  
-  async function getAllPackages(): Promise<NPMPackageSource[]> {
+}
+
+async function getAllPackages(): Promise<NPMPackageSource[]> {
     try {
-      const { stdout } = await exec('npm ls --json --depth=0 --parseable');
-      const dependencies = packageJson.dependencies;
-      const packageList = Object.keys(dependencies).map((name) => ({
-        name,
-        version: dependencies[name],
-        source: packageJson._resolved.split(':')[0],
-      }));
-      return packageList;
+        const { stdout } = await exec('npm ls --json --depth=0 --parseable');
+        const dependencies = packageJson.dependencies;
+        const packageList = Object.keys(dependencies).map((name) => ({
+            name,
+            version: dependencies[name],
+            source: packageJson._resolved.split(':')[0],
+        }));
+        return packageList;
     } catch (error) {
-      console.error(`Failed to get packages: ${error}`);
-      return [];
+        console.error(`Failed to get packages: ${error}`);
+        return [];
     }
-  }
-  
+}
+
 //   async function groupPackagesBySource(): Promise<{ [key: string]: string[] }> {
 //     try {
 //       const packages = await getAllPackages();
@@ -235,42 +236,42 @@ interface DependentProject {
 //   }
 // }
 
-  getAllPackages()
-  .then(packageList => console.log(packageList))
-  .catch(err => console.error(err))
+getAllPackages()
+    .then(packageList => console.log(packageList))
+    .catch(err => console.error(err))
 
 
-  async function getLatestVersions(packageList: string[]): Promise<string[]> {
+async function getLatestVersions(packageList: string[]): Promise<string[]> {
     const latestVersions: string[] = [];
-  
-    for (const packageName of packageList) {
-      const command = `npm show ${packageName} version`;
-      const latestVersion = await execCommand(command);
-  
-      latestVersions.push(`${packageName}: ${latestVersion}`);
-    }
-  
-    return latestVersions;
-  }
-  
-  async function execCommand(command: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      exec(command, (error, stdout, stderr) => {
-        if (error) {
-          reject(error);
-        } else if (stderr) {
-          reject(stderr);
-        } else {
-          resolve(stdout.trim());
-        }
-      });
-    });
-  }
 
-  let list = [ '@actions/core', '@actions/github' ]
-  getLatestVersions(list)
-  .then(latestVersions => console.log(latestVersions))
-  .catch(err => console.error(err));
+    for (const packageName of packageList) {
+        const command = `npm show ${packageName} version`;
+        const latestVersion = await execCommand(command);
+
+        latestVersions.push(`${packageName}: ${latestVersion}`);
+    }
+
+    return latestVersions;
+}
+
+async function execCommand(command: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                reject(error);
+            } else if (stderr) {
+                reject(stderr);
+            } else {
+                resolve(stdout.trim());
+            }
+        });
+    });
+}
+
+let list = ['@actions/core', '@actions/github']
+getLatestVersions(list)
+    .then(latestVersions => console.log(latestVersions))
+    .catch(err => console.error(err));
 
 
 
@@ -279,33 +280,33 @@ export async function getAllPackos(): Promise<NPMPacko[]> {
     const packageJson = require('../package.json');
     const packages = packageJson.dependencies;
     const packageList: NPMPacko[] = [];
-  
+
     for (const name in packages) {
-      const version = packages[name];
-      packageList.push({
-        name,
-        version,
-        latestVersion: '',
-      });
+        const version = packages[name];
+        packageList.push({
+            name,
+            version,
+            latestVersion: '',
+        });
     }
     return getLatestVersions(packageList.map(pkg => pkg.name))
-    .then(latestVersions => {
-      latestVersions.forEach((latestVersion, index) => {
-        packageList[index].latestVersion = latestVersion;
-      });
-      return packageList;
-    })
-    .catch(err => {
-      console.error('Error getting latest versions', err);
-      return packageList;
-    });
+        .then(latestVersions => {
+            latestVersions.forEach((latestVersion, index) => {
+                packageList[index].latestVersion = latestVersion;
+            });
+            return packageList;
+        })
+        .catch(err => {
+            console.error('Error getting latest versions', err);
+            return packageList;
+        });
 }
 
 
 getAllPackos()
-  .then((packos) => console.log(packos))
-  .catch((err) => console.error(err));
-  
+    .then((packos) => console.log(packos))
+    .catch((err) => console.error(err));
+
 
 // ========================================
 
@@ -317,22 +318,22 @@ getAllPackos()
 
 async function listNpmRegistries(): Promise<string[]> {
     return new Promise((resolve, reject) => {
-      exec('npm config get registry', (err, stdout, stderr) => {
-        if (err) {
-          reject(err);
-        } else {
-          const registries = stdout.split('\n').filter(registry => registry.trim() !== '');
-          resolve(registries);
-        }
-      });
+        exec('npm config get registry', (err, stdout, stderr) => {
+            if (err) {
+                reject(err);
+            } else {
+                const registries = stdout.split('\n').filter(registry => registry.trim() !== '');
+                resolve(registries);
+            }
+        });
     });
-  }
+}
 
 
 listNpmRegistries()
-.then(registries => console.log(registries))
-.catch(err => console.error(err));
-  
+    .then(registries => console.log(registries))
+    .catch(err => console.error(err));
+
 
 // //========================works fine=======================================
 
@@ -342,92 +343,92 @@ const execAsync = promisify(exec);
 
 
 export async function runNPM(): Promise<NPMPackage[]> {
-  try {
-    const token = core.getInput('github-token');
-    const octokit = github.getOctokit(token);
+    try {
+        const token = core.getInput('github-token');
+        const octokit = github.getOctokit(token);
 
-    const { data: contents } = await octokit.rest.repos.getContent({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      path: 'package.json',
-    });
+        const { data: contents } = await octokit.rest.repos.getContent({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            path: 'package.json',
+        });
 
-    const packages = packageJson.dependencies;
+        const packages = packageJson.dependencies;
 
-    const packageList = Object.keys(packages).map((name) => ({
-      name,
-      version: packages[name],
-      repoName: github.context.repo.repo,
-      owner: github.context.repo.owner,
-    }));
+        const packageList = Object.keys(packages).map((name) => ({
+            name,
+            version: packages[name],
+            repoName: github.context.repo.repo,
+            owner: github.context.repo.owner,
+        }));
 
-    return packageList;
-  } catch (error) {
-    core.setFailed("Fehler in runNPM");
-    return [];
-  }
+        return packageList;
+    } catch (error) {
+        core.setFailed("Fehler in runNPM");
+        return [];
+    }
 }
 
 
-  
+
 
 //   runNPM();
 
 // ======================================================
 export async function runRepoInfo() {
-  const token = core.getInput('github-token');
-  const octokit = github.getOctokit(token);
+    const token = core.getInput('github-token');
+    const octokit = github.getOctokit(token);
 
-  const context = github.context;
-  const repo = context.payload.repository?.full_name || '';
+    const context = github.context;
+    const repo = context.payload.repository?.full_name || '';
 
-  const branch = core.getInput('branch-name');
-  const { data: commit } = await octokit.rest.repos.getCommit({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    ref: branch,
-  });
+    const branch = core.getInput('branch-name');
+    const { data: commit } = await octokit.rest.repos.getCommit({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        ref: branch,
+    });
 
-  const output: Output = {
-    repository: {
-      name: repo,
-      currentReleaseTag: '',
-      license: '',
-      sha: commit.sha,
-    },
-    npmPackages: [],
-    nugetPackages: [],
-    submodules: [],
-    updateStrategy: updateStrategy,
-  };
-  // Get repository info
-  const { data: repository } = await octokit.rest.repos.get({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-  });
+    const output: Output = {
+        repository: {
+            name: repo,
+            currentReleaseTag: '',
+            license: '',
+            sha: commit.sha,
+        },
+        npmPackages: [],
+        nugetPackages: [],
+        submodules: [],
+        updateStrategy: updateStrategy,
+    };
+    // Get repository info
+    const { data: repository } = await octokit.rest.repos.get({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+    });
 
-  const dotNetProjects: string[] = await findALLCSPROJmodules();
-  const ListOfSources: string[] = await getDotnetSources();
+    const dotNetProjects: string[] = await findALLCSPROJmodules();
+    const ListOfSources: string[] = await getDotnetSources();
 
-  output.repository.currentReleaseTag = repository.default_branch;
-  output.repository.license = repository.license?.name || '';
+    output.repository.currentReleaseTag = repository.default_branch;
+    output.repository.license = repository.license?.name || '';
 
-  output.npmPackages = await runNPM();
-  output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
-  output.submodules = await getDotnetSubmodules();
-  output.updateStrategy = updateStrategy;
+    output.npmPackages = await runNPM();
+    output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
+    output.submodules = await getDotnetSubmodules();
+    output.updateStrategy = updateStrategy;
 
-  // Write output to file
-  const outputPath = core.getInput('output-path');
-  try {
-    core.info(JSON.stringify(output, null, 2))
-    const ouputstring: string = JSON.stringify(output, null, 2);
-    fs.writeFileSync(outputPath, ouputstring);
-    fs.closeSync(fs.openSync(outputPath, 'r'));
+    // Write output to file
+    const outputPath = core.getInput('output-path');
+    try {
+        core.info(JSON.stringify(output, null, 2))
+        const ouputstring: string = JSON.stringify(output, null, 2);
+        fs.writeFileSync(outputPath, ouputstring);
+        fs.closeSync(fs.openSync(outputPath, 'r'));
 
-  } catch (error) {
-    core.setFailed("WriteFileSync ist falsch")
-  }
+    } catch (error) {
+        core.setFailed("WriteFileSync ist falsch")
+    }
 }
 
 runRepoInfo();
@@ -440,63 +441,63 @@ const FilterSources = core.getMultilineInput("nuget-source").filter(s => s.trim(
 
 export async function getDotnetSources(): Promise<string[]> {
     return new Promise<string[]>((resolve, reject) => {
-      exec('dotnet nuget list source --format short', (error, stdout, stderr) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-        if (stderr) {
-          reject(stderr);
-          return;
-        }
-  
-        // Parse the output and extract the enabled source URLs
-        const sources = stdout.split('\r\n')
-          .map(source => source.trim())
-          .filter(source => source && !source.startsWith('---') && !source.startsWith('Source') && source.startsWith('E '))
-          .map(source => source.substring(2));
-  
-        resolve(sources);
-      });
+        exec('dotnet nuget list source --format short', (error, stdout, stderr) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            if (stderr) {
+                reject(stderr);
+                return;
+            }
+
+            // Parse the output and extract the enabled source URLs
+            const sources = stdout.split('\r\n')
+                .map(source => source.trim())
+                .filter(source => source && !source.startsWith('---') && !source.startsWith('Source') && source.startsWith('E '))
+                .map(source => source.substring(2));
+
+            resolve(sources);
+        });
     });
-  }
+}
 
 // =====================================================
 
 
 export async function findALLCSPROJmodules(): Promise<string[]> {
     return new Promise<string[]>((resolve, reject) => {
-      // Checkout the repository including submodules
-      const submoduleUpdate = spawn('git', ['submodule', 'update', '--init', '--recursive']);
-      submoduleUpdate.on('close', (code) => {
-        if (code !== 0) {
-          reject(`git submodule update exited with code ${code}`);
-          return;
-        }
-  
-        // Find all csproj files
-        const find = spawn('find', ['.', '-name', '*.csproj']);
-        let csprojFiles = '';
-        find.stdout.on('data', (data) => {
-          csprojFiles += data;
+        // Checkout the repository including submodules
+        const submoduleUpdate = spawn('git', ['submodule', 'update', '--init', '--recursive']);
+        submoduleUpdate.on('close', (code) => {
+            if (code !== 0) {
+                reject(`git submodule update exited with code ${code}`);
+                return;
+            }
+
+            // Find all csproj files
+            const find = spawn('find', ['.', '-name', '*.csproj']);
+            let csprojFiles = '';
+            find.stdout.on('data', (data) => {
+                csprojFiles += data;
+            });
+            find.on('close', (code) => {
+                if (code !== 0) {
+                    reject(`find exited with code ${code}`);
+                    return;
+                }
+
+                // Split the list of `csproj` files into an array of strings
+                const csprojFileList = csprojFiles.trim().split('\n');
+
+                // Output the list of `csproj` files found
+                //core.info(`List of csproj files found: ${csprojFileList}`);
+
+                resolve(csprojFileList);
+            });
         });
-        find.on('close', (code) => {
-          if (code !== 0) {
-            reject(`find exited with code ${code}`);
-            return;
-          }
-  
-          // Split the list of `csproj` files into an array of strings
-          const csprojFileList = csprojFiles.trim().split('\n');
-  
-          // Output the list of `csproj` files found
-          //core.info(`List of csproj files found: ${csprojFileList}`);
-  
-          resolve(csprojFileList);
-        });
-      });
     });
-  }
+}
 
 // ===================================================================
 
@@ -538,54 +539,54 @@ export async function findALLCSPROJmodules(): Promise<string[]> {
 //     }
 //     return packageInfoList;
 //   }
-  
+
 export async function getOutdatedPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
     const outdatedPackages: NugetPackageInfo[] = [];
-  
+
     for (const project of projectList) {
-      for (const source of sourceList) {
-        try {
-          const output = child_process.execSync(`dotnet list ${project} package --highest-minor --outdated --source ${source}`);
-          const lines = output.toString().split('\n');
-          let packageName: string = '';
-          let currentVersion: string = '';
-          let latestVersion: string = '';
-          let resolvedVersion: string = '';
-          for (const line of lines) {
-            if (line.includes('Project') && line.includes('has the following updates')) {
-            } else if (line.includes('>')) {
-              const parts = line.split(/ +/);
-              packageName = parts[1];
-              packageName = parts[2];
-              currentVersion = parts[3];
-              resolvedVersion = parts[4];
-              latestVersion = parts[5];
+        for (const source of sourceList) {
+            try {
+                const output = child_process.execSync(`dotnet list ${project} package --highest-minor --outdated --source ${source}`);
+                const lines = output.toString().split('\n');
+                let packageName: string = '';
+                let currentVersion: string = '';
+                let latestVersion: string = '';
+                let resolvedVersion: string = '';
+                for (const line of lines) {
+                    if (line.includes('Project') && line.includes('has the following updates')) {
+                    } else if (line.includes('>')) {
+                        const parts = line.split(/ +/);
+                        packageName = parts[1];
+                        packageName = parts[2];
+                        currentVersion = parts[3];
+                        resolvedVersion = parts[4];
+                        latestVersion = parts[5];
+                    }
+                }
+                if (packageName && currentVersion && latestVersion) {
+                    outdatedPackages.push({ project, source, packageName, currentVersion, resolvedVersion, latestVersion });
+                }
+            } catch (error: Error | any) {
+                const errorMessage = error.stderr.toString().trim();
+                if (errorMessage.includes('A project or solution file could not be found')) {
+                    continue;
+                } else {
+                    throw new Error(`Error while checking outdated packages in project ${project} and source ${source}: ${errorMessage}`);
+                }
             }
-          }
-          if (packageName && currentVersion && latestVersion) {
-            outdatedPackages.push({ project, source, packageName, currentVersion, resolvedVersion, latestVersion });
-          }
-        } catch (error: Error | any) {
-          const errorMessage = error.stderr.toString().trim();
-          if (errorMessage.includes('A project or solution file could not be found')) {
-            continue;
-          } else {
-            throw new Error(`Error while checking outdated packages in project ${project} and source ${source}: ${errorMessage}`);
-          }
         }
-      }
     }
-  
+
     return outdatedPackages;
-  }
-  
-  
+}
 
 
-  // ===================================================
+
+
+// ===================================================
 //   export async function getOutdatedNpmPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
 //     const outdatedPackages: NugetPackageInfo[] = [];
-  
+
 //     for (const project of projectList) {
 //       for (const source of sourceList) {
 //         const output = child_process.execSync(`dotnet list ${project} package --highest-minor --outdated --source ${source}`);
@@ -610,13 +611,13 @@ export async function getOutdatedPackages(projectList: string[], sourceList: str
 //         }
 //       }
 //     }
-  
+
 //     return outdatedPackages;
 //   }
-  
-  
 
-  
+
+
+
 
 // =====================================================
 
@@ -677,31 +678,31 @@ export async function getOutdatedPackages(projectList: string[], sourceList: str
 
 export async function getDotnetSubmodules(): Promise<Submodule[]> {
     return new Promise<Submodule[]>((resolve, reject) => {
-      exec('git submodule', (error, stdout, stderr) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-        if (stderr) {
-          reject(stderr);
-          return;
-        }
-  
-        const submodules = stdout
-          .split('\n')
-          .map(submodule => submodule.trim())
-          .filter(submodule => submodule !== '');
-  
-        const submoduleObjects: Submodule[] = submodules.map(submodule => {
-          const [sha, submoduleName, referenceBranch] = submodule.split(' ');
-          return { sha, submoduleName, referenceBranch: referenceBranch.slice(1, -1) };
-        });
-  
-        resolve(submoduleObjects);
-      });
-    });
-  }
+        exec('git submodule', (error, stdout, stderr) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            if (stderr) {
+                reject(stderr);
+                return;
+            }
 
-     function fetch(apiUrl: string) {
-         throw new Error('Function not implemented.');
-     }
+            const submodules = stdout
+                .split('\n')
+                .map(submodule => submodule.trim())
+                .filter(submodule => submodule !== '');
+
+            const submoduleObjects: Submodule[] = submodules.map(submodule => {
+                const [sha, submoduleName, referenceBranch] = submodule.split(' ');
+                return { sha, submoduleName, referenceBranch: referenceBranch.slice(1, -1) };
+            });
+
+            resolve(submoduleObjects);
+        });
+    });
+}
+
+function fetch(apiUrl: string) {
+    throw new Error('Function not implemented.');
+}
