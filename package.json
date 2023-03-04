@@ -1,0 +1,29 @@
+{
+  "name": "w2i2",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdrianRallBhs/W2I2.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AdrianRallBhs/W2I2/issues"
+  },
+  "homepage": "https://github.com/AdrianRallBhs/W2I2#readme",
+  "devDependencies": {
+    "@types/node": "^18.14.6",
+    "@types/xml2js": "^0.4.11",
+    "typescript": "^4.9.5",
+    "xml2js": "^0.4.23"
+  },
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1"
+  }
+}
