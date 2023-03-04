@@ -1,0 +1,28 @@
+name: 'Write2Inventory'
+description: 'Write all NuGet, NPM and Submodule information into a Repository'
+author: 'ARall'
+branding:
+  icon: 'check'
+  color: 'green'
+inputs:
+  github-token:
+    description: 'GitHub token'
+    required: false
+    default: ./
+  branch-name:
+    description: 'Name of the branch to get information for'
+    required: false
+    default: ./
+  output-path:
+    description: 'Path to output JSON file'
+    required: false
+    default: ./report.json
+  updateStrategy:
+    description: 'The update strategy to use: "MAJOR", "MINOR", or "PATCH". Defaults to "MINOR".'
+    required: false
+    default: 'MINOR'
+
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'

@@ -1,0 +1,47 @@
+name: Generate Report
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate_report:
+    name: generate_report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      # - name: Setup .NET Core
+      #   uses: actions/setup-dotnet@v2
+      #   with: 
+      #     dotnet-version: 6.0.x
+
+      - name: Install dependencies
+      # npm ci == npm install but gives feedback if not up-to-date
+        run: npm ci
+
+      - name: Build
+        run: npm run build --if-present
+
+
+      - name: Generate Report
+        uses: ./
+        id: report
+        # Replace with the path to the directory containing the action
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          branch-name: ${{ github.ref }}
+          output-path: ./report.json
+
+      - name: Write report to file
+        run: echo '${{ steps.report.outputs.output }}' > ./report.json
