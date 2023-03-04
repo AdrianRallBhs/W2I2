@@ -17,6 +17,7 @@ import * as xml2js from 'xml2js';
 import { exec, spawn } from 'child_process';
 import * as child_process from 'child_process';
 
+import { execSync } from 'child_process';
 
 // ======================geht nicht wie gewünscht==================================
 
