@@ -48,14 +48,16 @@ interface NPMPackage {
 }
 
 
-//   interface NugetPackageInfo {
-//     project: string;
-//     source: string;
-//     packageName: string;
-//     currentVersion: string;
-//     resolvedVersion: string;
-//     latestVersion: string;
-//   }
+
+
+  interface NugetPackageInfo {
+    project: string;
+    source: string;
+    packageName: string;
+    currentVersion: string;
+    resolvedVersion: string;
+    latestVersion: string;
+  }
 
 
 interface Output {
@@ -73,14 +75,14 @@ interface NugetPackage {
   Source: string;
 }
 
-interface NugetPackageInfo {
-  project: string;
-  source: string;
-  packageName: string;
-  currentVersion: string;
-  resolvedVersion: string;
-  latestVersion: string;
-};
+// interface NugetPackageInfo {
+//   project: string;
+//   source: string;
+//   packageName: string;
+//   currentVersion: string;
+//   resolvedVersion: string;
+//   latestVersion: string;
+// };
 
 interface PackageInfo {
   nugetName: string;
@@ -112,6 +114,47 @@ interface NugetPackageInfo {
 }
 
 
+interface NPMPackageInfo {
+    owner: string;
+    project: string;
+    source: string;
+    packageName: string;
+    currentVersion: string;
+    wantedVersion: string;
+    latestVersion: string;
+  }
+
+
+// =========================================
+
+function getNpmRegistries(): { [key: string]: string } {
+    const output = execSync('npm config ls --json').toString();
+    const config = JSON.parse(output);
+    const registries: { [key: string]: string } = {};
+  
+    Object.keys(config).forEach((key) => {
+      if (key.endsWith(':registry')) {
+        const scope = key.split(':')[0];
+        const registry = config[key];
+        registries[scope] = registry;
+      }
+    });
+  
+    return registries;
+  }
+  
+  function getNpmSourceRegistryUrl(source: string): string | undefined {
+    const registries = getNpmRegistries();
+    const sources = Object.keys(registries).filter((key) => {
+      const registry = registries[key];
+      return registry === source;
+    });
+  
+    return sources.length > 0 ? registries[sources[0]] : undefined;
+  }
+
+const allRegistries = getNpmRegistries();
+console.log('All registries:', allRegistries);
 
 // //========================works fine=======================================
 
@@ -143,6 +186,8 @@ export async function runNPM(): Promise<NPMPackage[]> {
   }
 }
 
+
+  
 
 //   runNPM();
 
