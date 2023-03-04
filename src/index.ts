@@ -245,7 +245,9 @@ interface NPMPackageSmall {
   .catch(err => console.error(err));
 
 
-  groupPackagesBySource();
+  groupPackagesBySource()
+  .then(sources => console.log(sources))
+  .catch(err => console.error(err))
 // =========================================
 export async function getAllPackos(): Promise<NPMPacko[]> {
     const packageJson = require('../package.json');
