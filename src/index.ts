@@ -142,7 +142,7 @@ async function listNpmRegistries(): Promise<string[]> {
     });
   }
 
-  console.log(listNpmRegistries());
+  listNpmRegistries();
 
 // //========================works fine=======================================
 
