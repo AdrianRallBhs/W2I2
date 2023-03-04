@@ -12,6 +12,8 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as fs from 'fs';
 const packageJson = require('../package.json');
+import * as npmCheckUpdates from 'npm-check-updates';
+import { promisify } from 'util';
 
 import * as xml2js from 'xml2js';
 import { exec, spawn } from 'child_process';
@@ -41,12 +43,30 @@ interface Submodule {
 
 }
 
+// interface NPMPackage {
+//   name: string;
+//   //current version
+//   version: string;
+//   repoName: string;
+//   owner: string;
+// }
+
 interface NPMPackage {
-  name: string;
-  version: string;
-  repoName: string;
-  owner: string;
-}
+    name: string;
+    version: string;
+    repoName: string;
+    owner: string;
+    source: string;
+  }
+
+// interface NPMPackage {
+//     owner: string;
+//     repoName: string;
+//     source: string;
+//     packageName: string;
+//     currentVersion: string;
+//     latestVersion: string;
+//   }
 
 
 
@@ -128,8 +148,40 @@ interface NPMPackageInfo {
 
 // =========================================
 
-
-async function listNpmRegistries(): Promise<string[]> {
+export async function runNPM(): Promise<NPMPackage[]> {
+    try {
+      const token = core.getInput('github-token');
+      const octokit = github.getOctokit(token);
+      const { data: contents } = await octokit.rest.repos.getContent({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        path: 'package.json',
+      });
+    
+      const packages = packageJson.dependencies;
+      const registries = await listNpmRegistries();
+  
+      const packageList = Object.keys(packages).map((name) => {
+        const currentVersion = packages[name];
+        const latestVersion = getLatestVersion(name, registries);
+        return {
+          name,
+          version: currentVersion,
+          repoName: github.context.repo.repo,
+          owner: github.context.repo.owner,
+          source: getRegistryName(currentVersion, registries),
+          currentVersion,
+          latestVersion,
+        };
+      });
+      return packageList;
+    } catch (error) {
+      core.setFailed('Fehler in runNPM');
+      return [];
+    }
+  }
+  
+  async function listNpmRegistries(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       exec('npm config get registry', (err, stdout, stderr) => {
         if (err) {
@@ -141,42 +193,92 @@ async function listNpmRegistries(): Promise<string[]> {
       });
     });
   }
+  
+  function getRegistryName(version: string, registries: string[]): string {
+    for (const registry of registries) {
+      if (version.startsWith(registry)) {
+        return registry;
+      }
+    }
+    return 'unknown';
+  }
+  
+  async function getLatestVersion(packageName: string, registries: string[]): Promise<string> {
+    let latestVersion = '';
+    for (const registry of registries) {
+      const versionCommand = `npm view ${packageName} version --registry ${registry}`;
+      const { stdout, stderr } = await promisify(exec)(versionCommand);
+      if (stderr) {
+        continue;
+      }
+      const version = stdout.trim();
+      if (semver.valid(version) && semver.gt(version, latestVersion)) {
+        latestVersion = version;
+      }
+    }
+    return latestVersion || 'unknown';
+  }
+
+// ========================================
 
 
-listNpmRegistries()
-.then(registries => console.log(registries))
-.catch(err => console.error(err));
+
+
+
+
+
+// async function listNpmRegistries(): Promise<string[]> {
+//     return new Promise((resolve, reject) => {
+//       exec('npm config get registry', (err, stdout, stderr) => {
+//         if (err) {
+//           reject(err);
+//         } else {
+//           const registries = stdout.split('\n').filter(registry => registry.trim() !== '');
+//           resolve(registries);
+//         }
+//       });
+//     });
+//   }
+
+
+// listNpmRegistries()
+// .then(registries => console.log(registries))
+// .catch(err => console.error(err));
   
 
 // //========================works fine=======================================
 
+const semver = require('semver');
+const execAsync = promisify(exec);
 
-export async function runNPM(): Promise<NPMPackage[]> {
-  try {
-    const token = core.getInput('github-token');
-    const octokit = github.getOctokit(token);
 
-    const { data: contents } = await octokit.rest.repos.getContent({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      path: 'package.json',
-    });
 
-    const packages = packageJson.dependencies;
+// export async function runNPM(): Promise<NPMPackage[]> {
+//   try {
+//     const token = core.getInput('github-token');
+//     const octokit = github.getOctokit(token);
 
-    const packageList = Object.keys(packages).map((name) => ({
-      name,
-      version: packages[name],
-      repoName: github.context.repo.repo,
-      owner: github.context.repo.owner,
-    }));
+//     const { data: contents } = await octokit.rest.repos.getContent({
+//       owner: github.context.repo.owner,
+//       repo: github.context.repo.repo,
+//       path: 'package.json',
+//     });
 
-    return packageList;
-  } catch (error) {
-    core.setFailed("Fehler in runNPM");
-    return [];
-  }
-}
+//     const packages = packageJson.dependencies;
+
+//     const packageList = Object.keys(packages).map((name) => ({
+//       name,
+//       version: packages[name],
+//       repoName: github.context.repo.repo,
+//       owner: github.context.repo.owner,
+//     }));
+
+//     return packageList;
+//   } catch (error) {
+//     core.setFailed("Fehler in runNPM");
+//     return [];
+//   }
+// }
 
 
   
