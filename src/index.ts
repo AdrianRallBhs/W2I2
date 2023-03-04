@@ -419,6 +419,7 @@ export async function runRepoInfo() {
     output.submodules = await getDotnetSubmodules();
     output.updateStrategy = updateStrategy;
 
+    console.log(getDependentProjects(output.repository));
     // Write output to file
     const outputPath = core.getInput('output-path');
     try {
