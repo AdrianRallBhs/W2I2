@@ -154,44 +154,8 @@ const octokit = new Octokit({
 
 
 //==============================
-async function getDependentRepositories(owner: string, repo: string, token: string): Promise<any[]> {
-    try {
-      const dependentRepos: any[] = [];
-  
-      // Fetch package.json file of the repository
-    //   const packageJsono = await octokit.repos.getContent({
-    //     owner,
-    //     repo,
-    //     path: "package.json",
-    //     headers: {
-    //       authorization: `token ${token}`,
-    //     },
-    //   });
-  
-      // Get dependencies and devDependencies from package.json
-      
-      const dependencies = packageJson.dependencies || {};
-      const devDependencies = packageJson.devDependencies || {};
-  
-      // Get all unique dependent packages from dependencies and devDependencies
-      const dependentPackages = new Set([...Object.keys(dependencies), ...Object.keys(devDependencies)]);
-  
-      // Get dependent repositories for each package
-      for (const packageName of dependentPackages) {
-        const dependentRepo = await getDependentRepositories(owner, repo,  token);
-        if (dependentRepo) {
-          dependentRepos.push(dependentRepo);
-        }
-      }
-  
-      return dependentRepos;
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
-  }
 
-console.log(getDependentRepositories( github.context.repo.owner, github.context.repo.repo, token));
+   
 //===========================  
 
 interface NPMPackageSource {
