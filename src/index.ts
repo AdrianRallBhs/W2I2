@@ -69,6 +69,7 @@ interface Output {
     nugetPackages: NugetPackageInfo[];
     submodules: Submodule[];
     updateStrategy: string;
+    dependendencies: DependentProject[];
 }
 
 
@@ -153,6 +154,10 @@ const token = core.getInput("github-token");
 const octokit = new Octokit({
     auth: token,
 });
+
+//Hier werden alle Repositories aufgelistet, 
+//die das Repository "test-repo" als Abhängigkeit in ihrer 
+//package.json- oder project.json-Datei angegeben haben.
 
 async function getDependentProjects(repository: Repository): Promise<DependentProject[]> {
     const query = `depends on:${repository.orgName}/${repository.repoName}`;
@@ -349,6 +354,7 @@ export async function runRepoInfo() {
         nugetPackages: [],
         submodules: [],
         updateStrategy: updateStrategy,
+        dependendencies: [],
     };
     // Get repository info
     const { data: repository } = await octokit.rest.repos.get({
@@ -366,6 +372,7 @@ export async function runRepoInfo() {
     output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
     output.submodules = await getDotnetSubmodules();
     output.updateStrategy = updateStrategy;
+    output.dependendencies = await getDependentProjects(output.repository);
 
      console.log(`DependentProjects: ${JSON.stringify(getDependentProjects, null, 2)}`);
     // Write output to file
