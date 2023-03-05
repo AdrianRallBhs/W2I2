@@ -39,6 +39,8 @@ interface NPMPackage {
 }
 
 interface NPMPacko {
+    orgName: string;
+    repoName: string;
     name: string;
     currentVersion: string;
     latestVersion: string;
@@ -235,12 +237,23 @@ getLatestVersions(list)
 // =========================================
 export async function getAllPackos(): Promise<NPMPacko[]> {
     const packageJson = require('../package.json');
+    const token = core.getInput('github-token');
+    const octokit = github.getOctokit(token);
+
+    const { data: contents } = await octokit.rest.repos.getContent({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            path: 'package.json',
+    });
+
     const packages = packageJson.dependencies;
     const packageList: NPMPacko[] = [];
 
     for (const name in packages) {
         const currentVersion = packages[name];
         packageList.push({
+            orgName: github.context.repo.owner,
+            repoName: github.context.repo.repo, 
             name,
             currentVersion,
             latestVersion: '',
