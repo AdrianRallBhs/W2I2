@@ -33,7 +33,7 @@ interface Submodule {
 interface NPMPackage {
     name: string;
     //current version
-    version: string;
+    currentVersion: string;
     repoName: string;
     orgName: string;
 }
@@ -74,7 +74,7 @@ interface Output {
 
 interface NugetPackage {
     Name: string;
-    Version: string;
+    currentVersion: string;
     Source: string;
 }
 
@@ -89,7 +89,7 @@ interface NugetPackage {
 
 interface PackageInfo {
     nugetName: string;
-    nugetVersion: string;
+    nugetCurrentVersion: string;
     nugetSource: string
 }
 
@@ -133,7 +133,7 @@ interface NPMPackageInfo {
 
 interface NPMPackageSmall {
     name: string;
-    version: string;
+    currentVersion: string;
 }
 
 
@@ -160,7 +160,7 @@ const octokit = new Octokit({
 
 interface NPMPackageSource {
     name: string;
-    version: string;
+    currentVersion: string;
     source: string;
 }
 
@@ -170,7 +170,7 @@ async function getAllPackages(): Promise<NPMPackageSource[]> {
         const dependencies = packageJson.dependencies;
         const packageList = Object.keys(dependencies).map((name) => ({
             name,
-            version: dependencies[name],
+            currentVersion: dependencies[name],
             source: packageJson._resolved.split(':')[0],
         }));
         return packageList;
@@ -227,10 +227,10 @@ getLatestVersions(list)
 //     const packageList: NPMPacko[] = [];
 
 //     for (const name in packages) {
-//         const version = packages[name];
+//         const currentVersion = packages[name];
 //         packageList.push({
 //             name,
-//             version,
+//             currentVersion,
 //             latestVersion: '',
 //         });
 //     }
@@ -302,7 +302,7 @@ export async function runNPM(): Promise<NPMPackage[]> {
 
         const packageList = Object.keys(packages).map((name) => ({
             name,
-            version: packages[name],
+            currentVersion: packages[name],
             repoName: github.context.repo.repo,
             orgName: github.context.repo.owner,
         }));
