@@ -38,7 +38,11 @@ interface NPMPackage {
     orgName: string;
 }
 
-
+interface NPMPacko {
+    name: string;
+    currentVersion: string;
+    latestVersion: string;
+}
 
 
 // interface NPMPackage {
@@ -65,7 +69,7 @@ interface NugetPackageInfo {
 
 interface Output {
     repository: Repository;
-    npmPackages: NPMPackage[];
+    npmPackages: NPMPacko[];
     nugetPackages: NugetPackageInfo[];
     submodules: Submodule[];
     updateStrategy: string;
@@ -229,31 +233,31 @@ getLatestVersions(list)
 
 
 // =========================================
-// export async function getAllPackos(): Promise<NPMPacko[]> {
-//     const packageJson = require('../package.json');
-//     const packages = packageJson.dependencies;
-//     const packageList: NPMPacko[] = [];
+export async function getAllPackos(): Promise<NPMPacko[]> {
+    const packageJson = require('../package.json');
+    const packages = packageJson.dependencies;
+    const packageList: NPMPacko[] = [];
 
-//     for (const name in packages) {
-//         const currentVersion = packages[name];
-//         packageList.push({
-//             name,
-//             currentVersion,
-//             latestVersion: '',
-//         });
-//     }
-//     return getLatestVersions(packageList.map(pkg => pkg.name))
-//         .then(latestVersions => {
-//             latestVersions.forEach((latestVersion, index) => {
-//                 packageList[index].latestVersion = latestVersion;
-//             });
-//             return packageList;
-//         })
-//         .catch(err => {
-//             console.error('Error getting latest versions', err);
-//             return packageList;
-//         });
-// }
+    for (const name in packages) {
+        const currentVersion = packages[name];
+        packageList.push({
+            name,
+            currentVersion,
+            latestVersion: '',
+        });
+    }
+    return getLatestVersions(packageList.map(pkg => pkg.name))
+        .then(latestVersions => {
+            latestVersions.forEach((latestVersion, index) => {
+                packageList[index].latestVersion = latestVersion;
+            });
+            return packageList;
+        })
+        .catch(err => {
+            console.error('Error getting latest versions', err);
+            return packageList;
+        });
+}
 
 
 // getAllPackos()
@@ -368,7 +372,7 @@ export async function runRepoInfo() {
     output.repository.currentReleaseTag = repository.default_branch;
     output.repository.license = repository.license?.name || '';
 
-    output.npmPackages = await runNPM();
+    output.npmPackages = await getAllPackos();
     output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
     output.submodules = await getDotnetSubmodules();
     output.updateStrategy = updateStrategy;
