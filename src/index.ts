@@ -16,7 +16,7 @@ const updateStrategy = core.getInput('updateStrategy', { required: false }) || '
 
 
 interface Repository {
-    owner: any;
+    orgName: any;
     name: string;
     currentReleaseTag: string;
     license: string;
@@ -35,14 +35,14 @@ interface NPMPackage {
     //current version
     version: string;
     repoName: string;
-    owner: string;
+    orgName: string;
 }
 
 
 
 
 // interface NPMPackage {
-//     owner: string;
+//     orgName: string;
 //     repoName: string;
 //     source: string;
 //     packageName: string;
@@ -118,7 +118,7 @@ interface NugetPackageInfo {
 
 
 interface NPMPackageInfo {
-    owner: string;
+    orgName: string;
     project: string;
     source: string;
     packageName: string;
@@ -141,7 +141,7 @@ interface NPMPackageSmall {
 
 interface DependentProject {
     name: string;
-    owner: string;
+    orgName: string;
 }
 
 import { Octokit } from "@octokit/rest";
@@ -304,7 +304,7 @@ export async function runNPM(): Promise<NPMPackage[]> {
             name,
             version: packages[name],
             repoName: github.context.repo.repo,
-            owner: github.context.repo.owner,
+            orgName: github.context.repo.owner,
         }));
 
         return packageList;
@@ -336,7 +336,7 @@ export async function runRepoInfo() {
 
     const output: Output = {
         repository: {
-            owner: '',
+            orgName: '',
             name: repo,
             currentReleaseTag: '',
             license: '',
