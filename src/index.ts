@@ -2,15 +2,10 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as fs from 'fs';
 const packageJson = require('../package.json');
-import * as npmCheckUpdates from 'npm-check-updates';
 import { promisify } from 'util';
-
-import * as xml2js from 'xml2js';
 import { exec, spawn } from 'child_process';
 import * as child_process from 'child_process';
 
-import { execSync } from 'child_process';
-import { Readable } from 'stream';
 
 // ======================geht nicht wie gewünscht==================================
 
@@ -158,6 +153,45 @@ const octokit = new Octokit({
 
 
 
+//==============================
+async function getDependentRepositories(owner: string, repo: string, token: string): Promise<any[]> {
+    try {
+      const dependentRepos: any[] = [];
+  
+      // Fetch package.json file of the repository
+    //   const packageJsono = await octokit.repos.getContent({
+    //     owner,
+    //     repo,
+    //     path: "package.json",
+    //     headers: {
+    //       authorization: `token ${token}`,
+    //     },
+    //   });
+  
+      // Get dependencies and devDependencies from package.json
+      
+      const dependencies = packageJson.dependencies || {};
+      const devDependencies = packageJson.devDependencies || {};
+  
+      // Get all unique dependent packages from dependencies and devDependencies
+      const dependentPackages = new Set([...Object.keys(dependencies), ...Object.keys(devDependencies)]);
+  
+      // Get dependent repositories for each package
+      for (const packageName of dependentPackages) {
+        const dependentRepo = await getDependentRepositories(owner, repo,  token);
+        if (dependentRepo) {
+          dependentRepos.push(dependentRepo);
+        }
+      }
+  
+      return dependentRepos;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
+
+console.log(await getDependentRepositories( github.context.repo.owner, github.context.repo.repo, token))
 //===========================  
 
 interface NPMPackageSource {
@@ -513,8 +547,4 @@ export async function getDotnetSubmodules(): Promise<Submodule[]> {
             resolve(submoduleObjects);
         });
     });
-}
-
-function fetch(apiUrl: string) {
-    throw new Error('Function not implemented.');
 }
