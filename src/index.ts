@@ -17,7 +17,7 @@ const updateStrategy = core.getInput('updateStrategy', { required: false }) || '
 
 interface Repository {
     orgName: any;
-    name: string;
+    repoName: string;
     currentReleaseTag: string;
     license: string;
     sha: string;
@@ -336,8 +336,8 @@ export async function runRepoInfo() {
 
     const output: Output = {
         repository: {
-            orgName: '',
-            name: repo,
+            orgName: context.repo.owner,
+            repoName: repo,
             currentReleaseTag: '',
             license: '',
             sha: commit.sha,
