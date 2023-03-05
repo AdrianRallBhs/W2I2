@@ -139,9 +139,12 @@ interface NPMPackageSmall {
 
 //=========================================
 
+
+//==============================
+
 interface DependentProject {
     name: string;
-    orgName: string;
+    owner: string;
 }
 
 import { Octokit } from "@octokit/rest";
@@ -151,11 +154,11 @@ const octokit = new Octokit({
     auth: token,
 });
 
-
-
-//==============================
-
-   
+async function getDependentProjects(repository: Repository): Promise<DependentProject[]> {
+    const query = `depends on:${repository.orgName}/${repository.repoName}`;
+    const { data } = await octokit.search.repos({ q: query });
+    return data.items.map((item) => ({ name: item.name, owner: repository.orgName }));
+}
 //===========================  
 
 interface NPMPackageSource {
