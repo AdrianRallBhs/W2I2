@@ -171,11 +171,6 @@ const octokit = new Octokit({
     auth: token,
 });
 
-async function getDependentProjects(repository: Repository): Promise<DependentProject[]> {
-    const query = `depends on:${repository.owner}/${repository.name}`;
-    const { data } = await octokit.search.repos({ q: query });
-    return data.items.map((item) => ({ name: item.name, owner: repository.owner }));
-}
 
 
 
