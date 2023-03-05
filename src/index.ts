@@ -191,7 +191,7 @@ async function getDependentRepositories(owner: string, repo: string, token: stri
     }
   }
 
-console.log(await getDependentRepositories( github.context.repo.owner, github.context.repo.repo, token))
+console.log(getDependentRepositories( github.context.repo.owner, github.context.repo.repo, token));
 //===========================  
 
 interface NPMPackageSource {
