@@ -1,13 +1,3 @@
-
-
-
-
-
-
-
-
-
-
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as fs from 'fs';
@@ -53,11 +43,6 @@ interface NPMPackage {
     owner: string;
 }
 
-interface NPMPacko {
-    name: string;
-    version: string;
-    latestVersion: string;
-}
 
 
 
@@ -173,11 +158,6 @@ const octokit = new Octokit({
 
 
 
-
-
-
-
-
 //===========================  
 
 interface NPMPackageSource {
@@ -202,34 +182,6 @@ async function getAllPackages(): Promise<NPMPackageSource[]> {
     }
 }
 
-//   async function groupPackagesBySource(): Promise<{ [key: string]: string[] }> {
-//     try {
-//       const packages = await getAllPackages();
-//       const sources: { [key: string]: string[] } = {};
-//       for (const pack of packages) {
-//         if (!sources[pack.source]) {
-//           sources[pack.source] = [];
-//         }
-//         sources[pack.source].push(`${pack.name}:${pack.version}`);
-//       }
-//       return sources;
-//     } catch (error) {
-//       console.error(`Failed to group packages by source: ${error}`);
-//       return {};
-//     }
-//   }
-
-// async function getAllPackages(): Promise<string[]> {
-//   try {
-//     const { stdout } = await exec('npm ls --json --depth=0 --parseable');
-//     const dependencies = packageJson.dependencies;
-//     const packageList = Object.keys(dependencies);
-//     return packageList;
-//   } catch (error) {
-//     console.error(`Failed to get packages: ${error}`);
-//     return [];
-//   }
-// }
 
 getAllPackages()
     .then(packageList => console.log(packageList))
@@ -271,36 +223,36 @@ getLatestVersions(list)
 
 
 // =========================================
-export async function getAllPackos(): Promise<NPMPacko[]> {
-    const packageJson = require('../package.json');
-    const packages = packageJson.dependencies;
-    const packageList: NPMPacko[] = [];
+// export async function getAllPackos(): Promise<NPMPacko[]> {
+//     const packageJson = require('../package.json');
+//     const packages = packageJson.dependencies;
+//     const packageList: NPMPacko[] = [];
 
-    for (const name in packages) {
-        const version = packages[name];
-        packageList.push({
-            name,
-            version,
-            latestVersion: '',
-        });
-    }
-    return getLatestVersions(packageList.map(pkg => pkg.name))
-        .then(latestVersions => {
-            latestVersions.forEach((latestVersion, index) => {
-                packageList[index].latestVersion = latestVersion;
-            });
-            return packageList;
-        })
-        .catch(err => {
-            console.error('Error getting latest versions', err);
-            return packageList;
-        });
-}
+//     for (const name in packages) {
+//         const version = packages[name];
+//         packageList.push({
+//             name,
+//             version,
+//             latestVersion: '',
+//         });
+//     }
+//     return getLatestVersions(packageList.map(pkg => pkg.name))
+//         .then(latestVersions => {
+//             latestVersions.forEach((latestVersion, index) => {
+//                 packageList[index].latestVersion = latestVersion;
+//             });
+//             return packageList;
+//         })
+//         .catch(err => {
+//             console.error('Error getting latest versions', err);
+//             return packageList;
+//         });
+// }
 
 
-getAllPackos()
-    .then((packos) => console.log(packos))
-    .catch((err) => console.error(err));
+// getAllPackos()
+//     .then((packos) => console.log(packos))
+//     .catch((err) => console.error(err));
 
 
 // ========================================
@@ -414,7 +366,7 @@ export async function runRepoInfo() {
     output.submodules = await getDotnetSubmodules();
     output.updateStrategy = updateStrategy;
 
-    console.log(`DependentProjects: ${JSON.stringify(getDependentProjects, null, 2)}`);
+    // console.log(`DependentProjects: ${JSON.stringify(getDependentProjects, null, 2)}`);
     // Write output to file
     const outputPath = core.getInput('output-path');
     try {
@@ -496,47 +448,6 @@ export async function findALLCSPROJmodules(): Promise<string[]> {
     });
 }
 
-// ===================================================================
-
-// export async function getAllNugetPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[][]> {
-//     const packageInfoList: NugetPackageInfo[][] = [];
-//     for (const project of projectList) {
-//       const projectPackageInfoList: NugetPackageInfo[] = [];
-//       for (const source of sourceList) {
-//         try {
-//           const output = child_process.execSync(`dotnet list ${project} package --highest-minor --outdated --source ${source}`);
-//           const lines = output.toString().split("\n");
-//           let packageName = "";
-//           let currentVersion = "";
-//           let resolvedVersion = "";
-//           let latestVersion = "";
-//           for (let i = 0; i < lines.length; i++) {
-//             const line = lines[i];
-//             if (line.startsWith(">")) {
-//               const fields = line.trim().split(/\s+/);
-//               packageName = fields[1];
-//               currentVersion = fields[2];
-//               resolvedVersion = fields[3];
-//               latestVersion = fields[4];
-//               projectPackageInfoList.push({
-//                 project,
-//                 source,
-//                 packageName,
-//                 currentVersion,
-//                 resolvedVersion,
-//                 latestVersion,
-//               });
-//             }
-//           }
-//         } catch (error) {
-//           console.log(`Error listing packages for project "${project}" and source "${source}": ${error}`);
-//         }
-//       }
-//       packageInfoList.push(projectPackageInfoList);
-//     }
-//     return packageInfoList;
-//   }
-
 export async function getOutdatedPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
     const outdatedPackages: NugetPackageInfo[] = [];
 
@@ -576,102 +487,6 @@ export async function getOutdatedPackages(projectList: string[], sourceList: str
 
     return outdatedPackages;
 }
-
-
-
-
-// ===================================================
-//   export async function getOutdatedNpmPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
-//     const outdatedPackages: NugetPackageInfo[] = [];
-
-//     for (const project of projectList) {
-//       for (const source of sourceList) {
-//         const output = child_process.execSync(`dotnet list ${project} package --highest-minor --outdated --source ${source}`);
-//         const lines = output.toString().split('\n');
-//         let packageName: string = '';
-//         let currentVersion: string = '';
-//         let latestVersion: string = '';
-//         let resolvedVersion: string = '';
-//         for (const line of lines) {
-//           if (line.includes('Project') && line.includes('has the following updates')) {
-//           } else if (line.includes('>')) {
-//             const parts = line.split(/ +/);
-//             packageName = parts[1];
-//             packageName = parts[2];
-//             currentVersion = parts[3];
-//             resolvedVersion = parts[4];
-//             latestVersion = parts[5];
-//           }
-//         }
-//         if (packageName && currentVersion && latestVersion) {
-//           outdatedPackages.push({ project, source, packageName, currentVersion, resolvedVersion, latestVersion });
-//         }
-//       }
-//     }
-
-//     return outdatedPackages;
-//   }
-
-
-
-
-
-// =====================================================
-
-// export async function getNugetPackageListFromCsprojDoc(csprojPath: string): Promise<PackageInfo[]> {
-//     const csprojXml = fs.readFileSync(csprojPath, 'utf-8');
-//     const xmlParser = new xml2js.Parser();
-//     let packageInfoList: PackageInfo[] = [];
-
-//     const sources = await getDotnetSources();
-
-//     try {
-//         const csprojDoc = await xmlParser.parseStringPromise(csprojXml);
-
-//         FilterSources.forEach(source => {
-//             for (const packageRef of csprojDoc.Project.ItemGroup[0].PackageReference) {
-//                 const packageName = packageRef.$.Include;
-//                 const packageVersion = packageRef.$.Version;
-//                 packageInfoList.push({
-//                     nugetName: packageName,
-//                     nugetVersion: packageVersion,
-//                     nugetSource: source,
-//                 });
-//             }
-//         })
-
-//     } catch (e) {
-//         console.log(`Could not parse .csproj file at ${csprojPath}. Error: ${e}`);
-//     }
-
-//     return packageInfoList;
-// }
-
-// =====================================================
-
-// export async function getNugetPackagesForSource(directoryPath: string, source?: string): Promise<NugetPackage[]> {
-//     const csprojPaths = await findALLCSPROJmodules();
-//     const packages: NugetPackage[] = [];
-
-//     for (const csprojPath of csprojPaths) {
-//         const packageInfoList = await getNugetPackageListFromCsprojDoc(csprojPath);
-
-//         for (const packageInfo of packageInfoList) {
-//             if (!source || packageInfo.nugetSource === source) {
-//                 packages.push({
-//                     Name: packageInfo.nugetName,
-//                     Version: packageInfo.nugetVersion,
-//                     Source: packageInfo.nugetSource,
-//                 });
-//             }
-//         }
-//     }
-
-//     return packages;
-// }
-
-
-
 
 export async function getDotnetSubmodules(): Promise<Submodule[]> {
     return new Promise<Submodule[]>((resolve, reject) => {
