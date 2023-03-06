@@ -400,6 +400,11 @@ findALLCSPROJmodules()
 .then(result => console.log(result))
 .catch(err => console.log(err));
 
+getDotnetSources()
+.then(result => console.log(result))
+.catch(err => console.log(err));
+
+
 
 // //========================works fine=======================================
 
