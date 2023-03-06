@@ -537,7 +537,6 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
         if (line.includes('Project')) {
         } else if (line.includes('>')) {
           const parts = line.split(/ +/);
-          packageName = parts[1];
           packageName = parts[2];
           currentVersion = parts[3];
           allPackages.push({ project, source, packageName, currentVersion });
