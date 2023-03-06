@@ -396,40 +396,44 @@ listNpmRegistries()
     .then(registries => console.log(registries))
     .catch(err => console.error(err));
 
+findALLCSPROJmodules()
+.then(result => console.log(result))
+.catch(err => console.log(err));
+
 
 // //========================works fine=======================================
 
-const semver = require('semver');
-const execAsync = promisify(exec);
+// const semver = require('semver');
+// const execAsync = promisify(exec);
 
 
 
-export async function runNPM(): Promise<NPMPackage[]> {
-    try {
-        const token = core.getInput('github-token');
-        const octokit = github.getOctokit(token);
+// export async function runNPM(): Promise<NPMPackage[]> {
+//     try {
+//         const token = core.getInput('github-token');
+//         const octokit = github.getOctokit(token);
 
-        const { data: contents } = await octokit.rest.repos.getContent({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            path: 'package.json',
-        });
+//         const { data: contents } = await octokit.rest.repos.getContent({
+//             owner: github.context.repo.owner,
+//             repo: github.context.repo.repo,
+//             path: 'package.json',
+//         });
 
-        const packages = packageJson.dependencies;
+//         const packages = packageJson.dependencies;
 
-        const packageList = Object.keys(packages).map((name) => ({
-            name,
-            currentVersion: packages[name],
-            repoName: github.context.repo.repo,
-            orgName: github.context.repo.owner,
-        }));
+//         const packageList = Object.keys(packages).map((name) => ({
+//             name,
+//             currentVersion: packages[name],
+//             repoName: github.context.repo.repo,
+//             orgName: github.context.repo.owner,
+//         }));
 
-        return packageList;
-    } catch (error) {
-        core.setFailed("Fehler in runNPM");
-        return [];
-    }
-}
+//         return packageList;
+//     } catch (error) {
+//         core.setFailed("Fehler in runNPM");
+//         return [];
+//     }
+// }
 
 
 
