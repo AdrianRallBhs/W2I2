@@ -596,47 +596,33 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
 //     return allPackages;
 //   }
   
-export async function getAllNuGetPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
-    const nugetPackages: NugetPackageInfo[] = [];
+async function getAllNuGetPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
+    const allPackages: NugetPackageInfo[] = [];
   
     for (const project of projectList) {
       for (const source of sourceList) {
-        const output = child_process.execSync(`dotnet list ${project} package --source ${source}`);
-        console.error(`Command 'dotnet list ${project} package --source ${source}' exited with code ${Error}`);
+        const output = await exec(`dotnet list ${project} package --source ${source}`);
         const lines = output.toString().split('\n');
-        
+        let packageName: string = '';
+        let currentVersion: string = '';
+        let resolvedVersion: string = '';
+        let latestVersion: string = '';
         for (const line of lines) {
-          if (line.startsWith(' ') && !line.startsWith('   ')) {
-            const parts = line.trim().split(' ');
-  
-            if (parts.length >= 3) {
-              const packageName = parts[0];
-              const currentVersion = parts[1];
-              const latestVersionOutput = child_process.execSync(`dotnet list ${project} package ${packageName} --highest-minor --all-versions --source ${source}`);
-              const latestVersionLines = latestVersionOutput.toString().split('\n');
-              let latestVersion = '';
-  
-              for (const latestVersionLine of latestVersionLines) {
-                if (latestVersionLine.startsWith(' ')) {
-                  const latestVersionParts = latestVersionLine.trim().split(' ');
-  
-                  if (latestVersionParts.length >= 3) {
-                    latestVersion = latestVersionParts[1];
-                  }
-                }
-              }
-  
-              if (latestVersion !== '' && currentVersion !== latestVersion) {
-                nugetPackages.push({ project, source, packageName, currentVersion, resolvedVersion: currentVersion, latestVersion });
-              } else {
-                nugetPackages.push({ project, source, packageName, currentVersion, resolvedVersion: currentVersion, latestVersion: currentVersion });
-              }
+          if (line.includes('>')) {
+            const parts = line.split(/ +/);
+            packageName = parts[1];
+            currentVersion = parts[2];
+            resolvedVersion = parts[3];
+            latestVersion = parts[4];
+            if (latestVersion === 'latest') {
+              latestVersion = currentVersion;
             }
+            allPackages.push({ project, source, packageName, currentVersion, resolvedVersion, latestVersion });
           }
         }
       }
     }
   
-    return nugetPackages;
+    return allPackages;
   }
   
