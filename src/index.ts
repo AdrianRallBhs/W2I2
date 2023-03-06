@@ -188,7 +188,7 @@ interface PackageInfooo {
   
   // Example usage
   const packagesToCheck = ['typescript', 'semver', 'xml2js'];
-  const packageInfoList: PackageInfo[] = [];
+  const packageInfoList: PackageInfooo[] = [];
   for (const packageName of packagesToCheck) {
     const packageInfo = getPackageInfo(packageName);
     if (packageInfo) {
