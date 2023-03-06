@@ -71,7 +71,8 @@ interface NugetPackageInfo {
 
 interface Output {
     repository: Repository;
-    npmPackages: PackageInfooo[];
+    InternnpmPackages: PackageInfooo[];
+    ExternnpmPackages: PackageInfooo[];
     nugetPackages: NugetPackageInfo[];
     submodules: Submodule[];
     updateStrategy: string;
@@ -187,7 +188,29 @@ interface PackageInfooo {
   }
 
 
-  function getAllPackageInfo(): PackageInfooo[] {
+//   function getAllPackageInfo(): PackageInfooo[] {
+//     try {
+//       // Get package information using `npm ls` and parse JSON output
+//       const packageData = JSON.parse(
+//         execSync(`npm ls --depth=0 --json`).toString()
+//       );
+  
+//       // Extract package names from parsed JSON
+//       const packageNames = Object.keys(packageData.dependencies);
+  
+//       // Get package information for each package name 
+//       const packageInfoList: (PackageInfooo | null)[] = packageNames.map((packageName) =>
+//         getPackageInfo(packageName)
+//       );
+  
+//       return packageInfoList.filter((p) => p !== null) as PackageInfooo[];
+//     } catch (error) {
+//       console.error(`Error getting information for all packages: ${error}`);
+//       return [];
+//     }
+//   }
+
+  function getAllPackageInfo(): { intern: PackageInfooo[], extern: PackageInfooo[] } {
     try {
       // Get package information using `npm ls` and parse JSON output
       const packageData = JSON.parse(
@@ -202,25 +225,29 @@ interface PackageInfooo {
         getPackageInfo(packageName)
       );
   
-      return packageInfoList.filter((p) => p !== null) as PackageInfooo[];
+      const internPackages: PackageInfooo[] = [];
+      const externPackages: PackageInfooo[] = [];
+  
+      if(packageInfoList != null){
+        packageInfoList.forEach((packageInfo: (PackageInfooo | null)) => {
+            if (packageInfo !== null) {
+              if (packageInfo.name.startsWith('@digitalengineering/')) {
+                internPackages.push(packageInfo);
+              } else {
+                externPackages.push(packageInfo);
+              }
+            }
+          });
+      }
+      
+  
+      return { intern: internPackages, extern: externPackages };
     } catch (error) {
       console.error(`Error getting information for all packages: ${error}`);
-      return [];
+      return { intern: [], extern: [] };
     }
   }
   
-  // Example usage
-//   const packagesToCheck = ['typescript', 'semver', 'xml2js'];
-//   const packageInfoList: PackageInfooo[] = [];
-//   for (const packageName of packagesToCheck) {
-//     const packageInfo = getPackageInfo(packageName);
-//     if (packageInfo) {
-//       packageInfoList.push(packageInfo);
-//     }
-//   }
-
-const packageInfoList = getAllPackageInfo();
-  console.log(`New bla bla package info list: ${JSON.stringify(packageInfoList, null, 2)}`)
 
 //==============================
 
@@ -270,11 +297,6 @@ async function getAllPackages(): Promise<NPMPackageSource[]> {
 }
 
 
-getAllPackages()
-    .then(packageList => console.log(packageList))
-    .catch(err => console.error(err))
-
-
 async function getLatestVersions(packageList: string[]): Promise<string[]> {
     const latestVersions: string[] = [];
 
@@ -301,11 +323,6 @@ async function execCommand(command: string): Promise<string> {
         });
     });
 }
-
-let list = ['@actions/core', '@actions/github']
-getLatestVersions(list)
-    .then(latestVersions => console.log(latestVersions))
-    .catch(err => console.error(err));
 
 
 
@@ -442,7 +459,8 @@ export async function runRepoInfo() {
             license: '',
             sha: commit.sha,
         },
-        npmPackages: [],
+        InternnpmPackages: [],
+        ExternnpmPackages: [],
         nugetPackages: [],
         submodules: [],
         updateStrategy: updateStrategy,
@@ -461,7 +479,8 @@ export async function runRepoInfo() {
     output.repository.license = repository.license?.name || '';
     // const packageInfoList = getAllPackageInfo();
     // console.log(`New bla bla package info list: ${JSON.stringify(packageInfoList, null, 2)}`)
-    output.npmPackages = await getAllPackageInfo();
+    output.InternnpmPackages = await getAllPackageInfo().intern;
+    output.ExternnpmPackages = await getAllPackageInfo().extern;
     output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
     output.submodules = await getDotnetSubmodules();
     output.updateStrategy = updateStrategy;
