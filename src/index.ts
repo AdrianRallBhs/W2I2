@@ -66,6 +66,7 @@ interface NugetPackageInfo {
     currentVersion: string;
     resolvedVersion: string;
     latestVersion: string;
+    isOutdated: boolean;
 }
 
 
@@ -577,45 +578,97 @@ export async function findALLCSPROJmodules(): Promise<string[]> {
     });
 }
 
+
 export async function getOutdatedPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
     const outdatedPackages: NugetPackageInfo[] = [];
-
+  
     for (const project of projectList) {
-        for (const source of sourceList) {
-            try {
-                const output = child_process.execSync(` `);
-                const lines = output.toString().split('\n');
-                let packageName: string = '';
-                let currentVersion: string = '';
-                let latestVersion: string = '';
-                let resolvedVersion: string = '';
-                for (const line of lines) {
-                    if (line.includes('Project') && line.includes('has the following updates')) {
-                    } else if (line.includes('>')) {
-                        const parts = line.split(/ +/);
-                        packageName = parts[1];
-                        packageName = parts[2];
-                        currentVersion = parts[3];
-                        resolvedVersion = parts[4];
-                        latestVersion = parts[5];
-                    }
-                }
-                if (packageName && currentVersion && latestVersion) {
-                    outdatedPackages.push({ project, source, packageName, currentVersion, resolvedVersion, latestVersion });
-                }
-            } catch (error: Error | any) {
-                const errorMessage = error.stderr.toString().trim();
-                if (errorMessage.includes('A project or solution file could not be found')) {
-                    continue;
-                } else {
-                    throw new Error(`Error while checking outdated packages in project ${project} and source ${source}: ${errorMessage}`);
-                }
+      for (const source of sourceList) {
+        try {
+          const output = child_process.execSync(` `);
+          const lines = output.toString().split('\n');
+          let packageName: string = '';
+          let currentVersion: string = '';
+          let latestVersion: string = '';
+          let resolvedVersion: string = '';
+          for (const line of lines) {
+            if (line.includes('Project') && line.includes('has the following updates')) {
+            } else if (line.includes('>')) {
+              const parts = line.split(/ +/);
+              packageName = parts[1];
+              packageName = parts[2];
+              currentVersion = parts[3];
+              resolvedVersion = parts[4];
+              latestVersion = parts[5];
             }
+          }
+          if (packageName && currentVersion && latestVersion) {
+            const isOutdated = currentVersion !== latestVersion;
+            outdatedPackages.push({
+              project,
+              source,
+              packageName,
+              currentVersion,
+              resolvedVersion,
+              latestVersion,
+              isOutdated
+            });
+          } else {
+            console.log(`Warning: Could not parse package info for project ${project} and source ${source}`);
+          }
+        } catch (error: Error | any) {
+          const errorMessage = error.stderr.toString().trim();
+          if (errorMessage.includes('A project or solution file could not be found')) {
+            continue;
+          } else {
+            throw new Error(`Error while checking outdated packages in project ${project} and source ${source}: ${errorMessage}`);
+          }
         }
+      }
     }
-
+  
     return outdatedPackages;
-}
+  }
+
+// export async function getOutdatedPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
+//     const outdatedPackages: NugetPackageInfo[] = [];
+
+//     for (const project of projectList) {
+//         for (const source of sourceList) {
+//             try {
+//                 const output = child_process.execSync(` `);
+//                 const lines = output.toString().split('\n');
+//                 let packageName: string = '';
+//                 let currentVersion: string = '';
+//                 let latestVersion: string = '';
+//                 let resolvedVersion: string = '';
+//                 for (const line of lines) {
+//                     if (line.includes('Project') && line.includes('has the following updates')) {
+//                     } else if (line.includes('>')) {
+//                         const parts = line.split(/ +/);
+//                         packageName = parts[1];
+//                         packageName = parts[2];
+//                         currentVersion = parts[3];
+//                         resolvedVersion = parts[4];
+//                         latestVersion = parts[5];
+//                     }
+//                 }
+//                 if (packageName && currentVersion && latestVersion) {
+//                     outdatedPackages.push({ project, source, packageName, currentVersion, resolvedVersion, latestVersion });
+//                 }
+//             } catch (error: Error | any) {
+//                 const errorMessage = error.stderr.toString().trim();
+//                 if (errorMessage.includes('A project or solution file could not be found')) {
+//                     continue;
+//                 } else {
+//                     throw new Error(`Error while checking outdated packages in project ${project} and source ${source}: ${errorMessage}`);
+//                 }
+//             }
+//         }
+//     }
+
+//     return outdatedPackages;
+// }
 
 export async function getDotnetSubmodules(): Promise<Submodule[]> {
     return new Promise<Submodule[]>((resolve, reject) => {
