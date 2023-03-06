@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Blzp3uKtam23CsqZxT5Uknbj9o9yI9hfLncT15gaol6InYIJHjOvBSBUbAWfqIq4fRfqdZ0rWc6mzQh01DUKgA==",
+  "dgSpecHash": "M9v78qdTP7VJKAkler9gjsW88y2stUY+cqf1+Vi9M2pM4ipk85Teq8PrqnS3MYJ92aZpDCEMQxHqiPzuw+zN+g==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Adrian\\Desktop\\OTH\\Bachelorarbeit\\Dependency0512\\StartAgain\\Blazor4\\BlazorApp4\\BlazorApp4\\BlazorApp4.csproj",
+  "projectFilePath": "C:\\Users\\Adrian\\Desktop\\OTH\\Bachelorarbeit\\Inventory2202\\W2I2\\Blazor4\\BlazorApp4\\BlazorApp4\\BlazorApp4.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Adrian\\.nuget\\packages\\microsoft.aspnetcore.razor\\2.0.2\\microsoft.aspnetcore.razor.2.0.2.nupkg.sha512"
   ],

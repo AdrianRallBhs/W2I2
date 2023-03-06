@@ -73,7 +73,7 @@ interface Output {
     repository: Repository;
     InternnpmPackages: PackageInfooo[];
     ExternnpmPackages: PackageInfooo[];
-    nugetPackages: NugetPackageInfo[][];
+    nugetPackages: NugetPackageInfo[];
     submodules: Submodule[];
     updateStrategy: string;
     dependendencies: DependentProject[];
@@ -490,7 +490,7 @@ export async function runRepoInfo() {
     // console.log(`New bla bla package info list: ${JSON.stringify(packageInfoList, null, 2)}`)
     output.InternnpmPackages = await getAllPackageInfo().intern;
     output.ExternnpmPackages = await getAllPackageInfo().extern;
-    output.nugetPackages = await getAllNugetPackages(dotNetProjects, ListOfSources);
+    output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
     output.submodules = await getDotnetSubmodules();
     output.updateStrategy = updateStrategy;
     output.dependendencies = await getDependentProjects(output.repository);
@@ -513,6 +513,7 @@ runRepoInfo();
 
 
 
+console.log(`Found packages: ${JSON.stringify(getOutdatedPackages(['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'], [ 'https://api.nuget.org/v3/index.json' ]))}`);
 
 
 const FilterSources = core.getMultilineInput("nuget-source").filter(s => s.trim() !== "")
@@ -685,3 +686,5 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
     }
     return packageInfoList;
   }
+
+
