@@ -153,7 +153,6 @@ interface PackageInfo {
     currentVersion: string;
     latestVersion: string;
     resolved: string;
-    integrity: string;
   }
   
   function getPackageInfo(packageName: string): PackageInfo | null {
@@ -169,7 +168,7 @@ interface PackageInfo {
           currentVersion: packageData.dependencies[packageName].version,
           latestVersion: '',
           resolved: packageData.dependencies[packageName].resolved,
-          integrity: packageData.dependencies[packageName].integrity,
+          //integrity: packageData.dependencies[packageName].integrity,
           nugetName: '',
           nugetCurrentVersion: '',
           nugetSource: ''
