@@ -146,6 +146,63 @@ interface NPMPackageSmall {
 
 //=========================================
 
+import { execSync } from 'child_process';
+
+interface PackageInfo {
+    name: string;
+    currentVersion: string;
+    latestVersion: string;
+    resolved: string;
+    integrity: string;
+  }
+  
+  function getPackageInfo(packageName: string): PackageInfo | null {
+    try {
+      // Get package information using `npm ls` and parse JSON output
+      const packageData = JSON.parse(
+        execSync(`npm ls ${packageName} --depth=0 --json`).toString()
+      );
+  
+      // Extract package information from parsed JSON
+      const packageInfo: PackageInfo = {
+          name: packageName,
+          currentVersion: packageData.dependencies[packageName].version,
+          latestVersion: '',
+          resolved: packageData.dependencies[packageName].resolved,
+          integrity: packageData.dependencies[packageName].integrity,
+          nugetName: '',
+          nugetCurrentVersion: '',
+          nugetSource: ''
+      };
+  
+      // Check if package is outdated using `npm outdated`
+      const outdatedData = execSync(`npm outdated ${packageName} --json`).toString();
+      const outdatedInfo = JSON.parse(outdatedData);
+      if (outdatedInfo[packageName]) {
+        packageInfo.latestVersion = outdatedInfo[packageName].latest;
+      } else {
+        packageInfo.latestVersion = packageInfo.currentVersion;
+      }
+  
+      return packageInfo;
+    } catch (error) {
+      console.error(`Error getting information for package ${packageName}: ${error}`);
+      return null;
+    }
+  }
+  
+  // Example usage
+  const packagesToCheck = ['typescript', 'semver', 'xml2js'];
+  const packageInfoList: PackageInfo[] = [];
+  for (const packageName of packagesToCheck) {
+    const packageInfo = getPackageInfo(packageName);
+    if (packageInfo) {
+      packageInfoList.push(packageInfo);
+    }
+  }
+
+
+  console.log(`Package Info List Neu: ${packageInfoList}`);
 
 //==============================
 
@@ -479,7 +536,7 @@ export async function getOutdatedPackages(projectList: string[], sourceList: str
     for (const project of projectList) {
         for (const source of sourceList) {
             try {
-                const output = child_process.execSync(`dotnet list ${project} package --highest-minor --outdated --source ${source}`);
+                const output = child_process.execSync(` `);
                 const lines = output.toString().split('\n');
                 let packageName: string = '';
                 let currentVersion: string = '';
