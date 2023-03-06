@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as fs from 'fs';
-const packageJson = require('../package-lock.json');
+const packageJson = require('../package.json');
 import { promisify } from 'util';
 import { exec, spawn } from 'child_process';
 import * as child_process from 'child_process';
@@ -202,7 +202,7 @@ interface PackageInfo {
   }
 
 
-  console.log(`Package Info List Neu: ${packageInfoList}`);
+  console.log(`New bla bla package info list: ${JSON.stringify(packageInfoList, null, 2)}`)
 
 //==============================
 
@@ -293,14 +293,14 @@ getLatestVersions(list)
 
 // =========================================
 export async function getAllPackos(): Promise<NPMPacko[]> {
-    const packageJson = require('../package-lock.json');
+    const packageJson = require('../package.json');
     const token = core.getInput('github-token');
     const octokit = github.getOctokit(token);
 
     const { data: contents } = await octokit.rest.repos.getContent({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
-            path: 'package-lock.json',
+            path: 'package.json',
     });
 
     const packages = packageJson.dependencies;
@@ -377,7 +377,7 @@ export async function runNPM(): Promise<NPMPackage[]> {
         const { data: contents } = await octokit.rest.repos.getContent({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
-            path: 'package-lock.json',
+            path: 'package.json',
         });
 
         const packages = packageJson.dependencies;
