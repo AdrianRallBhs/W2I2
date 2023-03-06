@@ -30,33 +30,6 @@ interface Submodule {
 
 }
 
-interface NPMPackage {
-    name: string;
-    //current version
-    currentVersion: string;
-    repoName: string;
-    orgName: string;
-}
-
-interface NPMPacko {
-    orgName: string;
-    repoName: string;
-    name: string;
-    currentVersion: string;
-    latestVersion: string;
-}
-
-
-// interface NPMPackage {
-//     orgName: string;
-//     repoName: string;
-//     source: string;
-//     packageName: string;
-//     currentVersion: string;
-//     latestVersion: string;
-//   }
-
-
 
 
 interface NugetPackageInfo {
@@ -80,11 +53,6 @@ interface Output {
 }
 
 
-interface NugetPackage {
-    Name: string;
-    currentVersion: string;
-    Source: string;
-}
 
 // interface NugetPackageInfo {
 //   project: string;
@@ -95,16 +63,6 @@ interface NugetPackage {
 //   latestVersion: string;
 // };
 
-interface PackageInfo {
-    nugetName: string;
-    nugetCurrentVersion: string;
-    nugetSource: string
-}
-
-interface Source {
-    name: string;
-    value: string;
-}
 
 interface Submodule {
     sha: string;
@@ -122,26 +80,6 @@ interface NugetPackageInfo {
     currentVersion: string;
     resolvedVersion: string;
     latestVersion: string;
-}
-
-
-interface NPMPackageInfo {
-    orgName: string;
-    project: string;
-    source: string;
-    packageName: string;
-    currentVersion: string;
-    wantedVersion: string;
-    latestVersion: string;
-}
-
-
-// =========================================
-
-
-interface NPMPackageSmall {
-    name: string;
-    currentVersion: string;
 }
 
 
@@ -324,58 +262,7 @@ async function execCommand(command: string): Promise<string> {
     });
 }
 
-
-
-// =========================================
-export async function getAllPackos(): Promise<NPMPacko[]> {
-    const packageJson = require('../package.json');
-    const token = core.getInput('github-token');
-    const octokit = github.getOctokit(token);
-
-    const { data: contents } = await octokit.rest.repos.getContent({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            path: 'package.json',
-    });
-
-    const packages = packageJson.dependencies;
-    const packageList: NPMPacko[] = [];
-
-    for (const name in packages) {
-        const currentVersion = packages[name];
-        packageList.push({
-            orgName: github.context.repo.owner,
-            repoName: github.context.repo.repo, 
-            name,
-            currentVersion,
-            latestVersion: '',
-        });
-    }
-    return getLatestVersions(packageList.map(pkg => pkg.name))
-        .then(latestVersions => {
-            latestVersions.forEach((latestVersion, index) => {
-                packageList[index].latestVersion = latestVersion;
-            });
-            return packageList;
-        })
-        .catch(err => {
-            console.error('Error getting latest versions', err);
-            return packageList;
-        });
-}
-
-
-// getAllPackos()
-//     .then((packos) => console.log(packos))
-//     .catch((err) => console.error(err));
-
-
 // ========================================
-
-
-
-
-
 
 
 async function listNpmRegistries(): Promise<string[]> {
