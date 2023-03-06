@@ -601,7 +601,8 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
       let packageName: string = '';
       let currentVersion: string = '';
       for (const line of lines) {
-        if (line.includes('>') && !line.includes('PackageReference')) {
+        if (line.includes('Project') && line.includes('has the following')) {
+        } else if (line.includes('>')) {
           const parts = line.split(/ +/);
           packageName = parts[1];
           currentVersion = parts[2];
