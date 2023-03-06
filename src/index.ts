@@ -565,21 +565,45 @@ export async function getDotnetSubmodules(): Promise<Submodule[]> {
 //   }
   
 async function getAllNuGetPackages(projectList: string[], sourceList: string[]): Promise<AllNugetPackageInfo[]> {
+    // const allPackages: AllNugetPackageInfo[] = [];
+  
+    // for (const project of projectList) {
+    //   for (const source of sourceList) {
+    //     const output = await exec(`dotnet list ${project} package --source ${source}`);
+    //     const lines = output.toString().split('\n');
+    //     let packageName: string = '';
+    //     let currentVersion: string = '';
+    //     for (const line of lines) {
+    //       if (line.includes('>')) {
+    //         const parts = line.split(/ +/);
+    //         packageName = parts[1];
+    //         currentVersion = parts[2];
+    //         allPackages.push({ project, source, packageName, currentVersion });
+    //       }
+    //     }
+    //   }
+    // }
+  
+    // return allPackages;
     const allPackages: AllNugetPackageInfo[] = [];
   
     for (const project of projectList) {
       for (const source of sourceList) {
-        const output = await exec(`dotnet list ${project} package --source ${source}`);
+        const output = child_process.execSync(`dotnet list ${project} package --source ${source}`);
         const lines = output.toString().split('\n');
         let packageName: string = '';
         let currentVersion: string = '';
         for (const line of lines) {
-          if (line.includes('>')) {
+          if (line.includes('Project') && line.includes('has the following updates')) {
+          } else if (line.includes('>')) {
             const parts = line.split(/ +/);
             packageName = parts[1];
-            currentVersion = parts[2];
-            allPackages.push({ project, source, packageName, currentVersion });
+            packageName = parts[2];
+            currentVersion = parts[3];
           }
+        }
+        if (packageName && currentVersion) {
+          allPackages.push({ project, source, packageName, currentVersion });
         }
       }
     }
