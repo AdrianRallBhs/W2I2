@@ -601,33 +601,48 @@ export async function getAllNuGetPackages(projectList: string[], sourceList: str
   
     for (const project of projectList) {
       for (const source of sourceList) {
-        const output = child_process.execSync(`dotnet list ${project} package --source ${source}`);
-        const lines = output.toString().split('\n');
-        let packageName: string = '';
-        let currentVersion: string = '';
-        let latestVersion: string = '';
-        let resolvedVersion: string = '';
-        let isLatestVersion: boolean = true;
-        for (const line of lines) {
-          if (line.includes('Project ')) {
-            // Skip the first line
-          } else if (line.includes('>')) {
-            const parts = line.split(/ +/);
-            packageName = parts[1];
-            currentVersion = parts[3];
-            resolvedVersion = parts[4];
-            latestVersion = parts[5];
-            if (currentVersion !== latestVersion) {
-              isLatestVersion = false;
+        try {
+          // Get a list of all packages for the project and source
+          const listOutput = child_process.execSync(`dotnet list ${project} package --source ${source}`);
+          const listLines = listOutput.toString().split('\n');
+  
+          // Get a list of all outdated packages for the project and source
+          const outdatedOutput = child_process.execSync(`dotnet list ${project} package --highest-minor --outdated --source ${source}`);
+          const outdatedLines = outdatedOutput.toString().split('\n');
+          const outdatedPackages: { [name: string]: { currentVersion: string, latestVersion: string } } = {};
+          for (const line of outdatedLines) {
+            if (line.startsWith(' ') || !line.includes(' ')) {
+              continue;
             }
-            allPackages.push({
-              project,
-              source,
-              packageName,
-              currentVersion: isLatestVersion ? latestVersion : currentVersion,
-              resolvedVersion: isLatestVersion ? latestVersion : resolvedVersion,
-              latestVersion,
-            });
+            const parts = line.split(/ +/);
+            outdatedPackages[parts[0]] = {
+              currentVersion: parts[1],
+              latestVersion: parts[2],
+            };
+          }
+  
+          // Parse the output of the `dotnet list` command to get information about each package
+          let packageName: string = '';
+          let currentVersion: string = '';
+          let latestVersion: string = '';
+          let resolvedVersion: string = '';
+          for (const line of listLines) {
+            if (line.startsWith(' ') || !line.includes(' ')) {
+              continue;
+            }
+            const parts = line.split(/ +/);
+            packageName = parts[0];
+            currentVersion = parts[1];
+            resolvedVersion = parts[2];
+            latestVersion = outdatedPackages[packageName]?.latestVersion || currentVersion;
+            allPackages.push({ project, source, packageName, currentVersion, resolvedVersion, latestVersion });
+          }
+        } catch (error: Error | any) {
+          const errorMessage = error.stderr.toString().trim();
+          if (errorMessage.includes('A project or solution file could not be found')) {
+            continue;
+          } else {
+            throw new Error(`Error while getting packages in project ${project} and source ${source}: ${errorMessage}`);
           }
         }
       }
