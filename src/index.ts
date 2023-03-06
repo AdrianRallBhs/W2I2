@@ -370,7 +370,7 @@ export async function runRepoInfo() {
     // console.log(`New bla bla package info list: ${JSON.stringify(packageInfoList, null, 2)}`)
     output.InternnpmPackages = await getAllPackageInfo().intern;
     output.ExternnpmPackages = await getAllPackageInfo().extern;
-    output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
+    output.nugetPackages = await getAllNuGetPackages(dotNetProjects, ListOfSources);
     output.submodules = await getDotnetSubmodules();
     output.updateStrategy = updateStrategy;
     output.dependendencies = await getDependentProjects(output.repository);
@@ -596,5 +596,43 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
 //     return allPackages;
 //   }
   
-
+export async function getAllNuGetPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
+    const allPackages: NugetPackageInfo[] = [];
+  
+    for (const project of projectList) {
+      for (const source of sourceList) {
+        const output = child_process.execSync(`dotnet list ${project} package --source ${source}`);
+        const lines = output.toString().split('\n');
+        let packageName: string = '';
+        let currentVersion: string = '';
+        let latestVersion: string = '';
+        let resolvedVersion: string = '';
+        let isLatestVersion: boolean = true;
+        for (const line of lines) {
+          if (line.includes('Project ')) {
+            // Skip the first line
+          } else if (line.includes('>')) {
+            const parts = line.split(/ +/);
+            packageName = parts[1];
+            currentVersion = parts[3];
+            resolvedVersion = parts[4];
+            latestVersion = parts[5];
+            if (currentVersion !== latestVersion) {
+              isLatestVersion = false;
+            }
+            allPackages.push({
+              project,
+              source,
+              packageName,
+              currentVersion: isLatestVersion ? latestVersion : currentVersion,
+              resolvedVersion: isLatestVersion ? latestVersion : resolvedVersion,
+              latestVersion,
+            });
+          }
+        }
+      }
+    }
+  
+    return allPackages;
+  }
 
