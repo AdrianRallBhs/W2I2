@@ -66,7 +66,6 @@ interface NugetPackageInfo {
     currentVersion: string;
     resolvedVersion: string;
     latestVersion: string;
-    isOutdated: boolean;
 }
 
 
@@ -578,7 +577,6 @@ export async function findALLCSPROJmodules(): Promise<string[]> {
     });
 }
 
-
 export async function getOutdatedPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
     const outdatedPackages: NugetPackageInfo[] = [];
   
@@ -600,21 +598,13 @@ export async function getOutdatedPackages(projectList: string[], sourceList: str
               currentVersion = parts[3];
               resolvedVersion = parts[4];
               latestVersion = parts[5];
+              if (currentVersion === latestVersion) {
+                latestVersion = currentVersion;
+              }
             }
           }
           if (packageName && currentVersion && latestVersion) {
-            const isOutdated = currentVersion !== latestVersion;
-            outdatedPackages.push({
-              project,
-              source,
-              packageName,
-              currentVersion,
-              resolvedVersion,
-              latestVersion,
-              isOutdated
-            });
-          } else {
-            console.log(`Warning: Could not parse package info for project ${project} and source ${source}`);
+            outdatedPackages.push({ project, source, packageName, currentVersion, resolvedVersion, latestVersion });
           }
         } catch (error: Error | any) {
           const errorMessage = error.stderr.toString().trim();
@@ -629,6 +619,7 @@ export async function getOutdatedPackages(projectList: string[], sourceList: str
   
     return outdatedPackages;
   }
+
 
 // export async function getOutdatedPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
 //     const outdatedPackages: NugetPackageInfo[] = [];
