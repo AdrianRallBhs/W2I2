@@ -190,9 +190,15 @@ interface PackageInfooo {
 
 //==============================
 
+//@digitalengineering/de_id_np_installdependencies: "^0 || ^1" --> wichtige dependency
+//@digitalengineering/de_ls_ts_bafu_basicfunctions: "^1.2.1" --> wichtige dependency 
+// both found in package-lock.json oder package.json
+
+// bei nuget --> alle mit der Quelle "E https://nuget.github.bhs-world.com" --> diese sind dependencies
+
 interface DependentProject {
     name: string;
-    owner: string;
+    currentVersion: string;
 }
 
 import { Octokit } from "@octokit/rest";
@@ -206,11 +212,7 @@ const octokit = new Octokit({
 //die das Repository "test-repo" als Abhängigkeit in ihrer 
 //package.json- oder project.json-Datei angegeben haben.
 
-async function getDependentProjects(repository: Repository): Promise<DependentProject[]> {
-    const query = `depends on:${repository.orgName}/${repository.repoName}`;
-    const { data } = await octokit.search.repos({ q: query });
-    return data.items.map((item) => ({ name: item.name, owner: repository.orgName }));
-}
+
 //===========================  
 
 interface NPMPackageSource {
@@ -236,32 +238,7 @@ async function getAllPackages(): Promise<NPMPackageSource[]> {
 }
 
 
-async function getLatestVersions(packageList: string[]): Promise<string[]> {
-    const latestVersions: string[] = [];
 
-    for (const packageName of packageList) {
-        const command = `npm show ${packageName} version`;
-        const latestVersion = await execCommand(command);
-
-        latestVersions.push(`${packageName}: ${latestVersion}`);
-    }
-
-    return latestVersions;
-}
-
-async function execCommand(command: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                reject(error);
-            } else if (stderr) {
-                reject(stderr);
-            } else {
-                resolve(stdout.trim());
-            }
-        });
-    });
-}
 
 // ========================================
 
@@ -293,45 +270,6 @@ getDotnetSources()
 .catch(err => console.log(err));
 
 
-
-// //========================works fine=======================================
-
-// const semver = require('semver');
-// const execAsync = promisify(exec);
-
-
-
-// export async function runNPM(): Promise<NPMPackage[]> {
-//     try {
-//         const token = core.getInput('github-token');
-//         const octokit = github.getOctokit(token);
-
-//         const { data: contents } = await octokit.rest.repos.getContent({
-//             owner: github.context.repo.owner,
-//             repo: github.context.repo.repo,
-//             path: 'package.json',
-//         });
-
-//         const packages = packageJson.dependencies;
-
-//         const packageList = Object.keys(packages).map((name) => ({
-//             name,
-//             currentVersion: packages[name],
-//             repoName: github.context.repo.repo,
-//             orgName: github.context.repo.owner,
-//         }));
-
-//         return packageList;
-//     } catch (error) {
-//         core.setFailed("Fehler in runNPM");
-//         return [];
-//     }
-// }
-
-
-
-
-//   runNPM();
 
 // ======================================================
 export async function runRepoInfo() {
@@ -383,7 +321,7 @@ export async function runRepoInfo() {
     output.AllNugetPackages = await getAllNuGetPackages(dotNetProjects, ListOfSources);
     output.submodules = await getDotnetSubmodules();
     output.updateStrategy = updateStrategy;
-    output.dependendencies = await getDependentProjects(output.repository);
+    output.dependendencies = await getDependentProjects(output.AllNugetPackages);
 
      console.log(`DependentProjects: ${JSON.stringify(getDependentProjects, null, 2)}`);
     // Write output to file
@@ -546,4 +484,21 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
   }
 
   return allPackages;
+}
+
+function getDependentProjects(allNugetPackages: AllNugetPackageInfo[]): DependentProject[] {
+  const dependentProjects: DependentProject[] = [];
+
+  for (const nugetPackage of allNugetPackages) {
+    //https://api.nuget.org/v3/index.json
+    //https://nuget.github.bhs-world.com
+    if (nugetPackage.source === "https://api.nuget.org/v3/index.json") {
+      dependentProjects.push({
+        name: nugetPackage.packageName,
+        currentVersion: nugetPackage.currentVersion,
+      });
+    }
+  }
+
+  return dependentProjects;
 }
