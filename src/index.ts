@@ -370,7 +370,7 @@ export async function runRepoInfo() {
     // console.log(`New bla bla package info list: ${JSON.stringify(packageInfoList, null, 2)}`)
     output.InternnpmPackages = await getAllPackageInfo().intern;
     output.ExternnpmPackages = await getAllPackageInfo().extern;
-    output.nugetPackages = await getAllNuGetPackages(dotNetProjects, ListOfSources);
+    output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
     output.submodules = await getDotnetSubmodules();
     output.updateStrategy = updateStrategy;
     output.dependendencies = await getDependentProjects(output.repository);
@@ -596,54 +596,5 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
 //     return allPackages;
 //   }
   
-
-
-
-export async function getAllNuGetPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
-    const allPackages: NugetPackageInfo[] = [];
-
-    for (const project of projectList) {
-        for (const source of sourceList) {
-            try {
-                const output = child_process.execSync(`dotnet list ${project} package --include-transitive --source ${source}`);
-                const lines = output.toString().split('\n');
-                let packageName: string = '';
-                let currentVersion: string = '';
-                let latestVersion: string = '';
-                let resolvedVersion: string = '';
-                for (const line of lines) {
-                    if (line.includes('Project')) {
-                        continue;
-                    } else if (line.includes('>')) {
-                        const parts = line.split(/ +/);
-                        packageName = parts[1];
-                        packageName = parts[2];
-                        if (parts.length === 4) {
-                            currentVersion = parts[3];
-                            latestVersion = parts[3];
-                            resolvedVersion = parts[3];
-                        } else {
-                            currentVersion = parts[3];
-                            resolvedVersion = parts[4];
-                            latestVersion = parts[5];
-                        }
-                    }
-                    if (packageName && currentVersion && latestVersion) {
-                        allPackages.push({ project, source, packageName, currentVersion, resolvedVersion, latestVersion });
-                    }
-                }
-            } catch (error: Error | any) {
-                const errorMessage = error.stderr.toString().trim();
-                if (errorMessage.includes('A project or solution file could not be found')) {
-                    continue;
-                } else {
-                    throw new Error(`Error while listing packages in project ${project} and source ${source}: ${errorMessage}`);
-                }
-            }
-        }
-    }
-
-    return allPackages;
-}
 
 
