@@ -71,7 +71,7 @@ interface NugetPackageInfo {
 
 interface Output {
     repository: Repository;
-    npmPackages: NPMPacko[];
+    npmPackages: PackageInfooo[];
     nugetPackages: NugetPackageInfo[];
     submodules: Submodule[];
     updateStrategy: string;
@@ -459,8 +459,9 @@ export async function runRepoInfo() {
 
     output.repository.currentReleaseTag = repository.default_branch;
     output.repository.license = repository.license?.name || '';
-
-    output.npmPackages = await getAllPackos();
+    // const packageInfoList = getAllPackageInfo();
+    // console.log(`New bla bla package info list: ${JSON.stringify(packageInfoList, null, 2)}`)
+    output.npmPackages = await getAllPackageInfo();
     output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
     output.submodules = await getDotnetSubmodules();
     output.updateStrategy = updateStrategy;
