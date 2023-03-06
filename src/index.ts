@@ -185,18 +185,41 @@ interface PackageInfooo {
       return null;
     }
   }
+
+
+  function getAllPackageInfo(): PackageInfooo[] {
+    try {
+      // Get package information using `npm ls` and parse JSON output
+      const packageData = JSON.parse(
+        execSync(`npm ls --depth=0 --json`).toString()
+      );
   
-  // Example usage
-  const packagesToCheck = ['typescript', 'semver', 'xml2js'];
-  const packageInfoList: PackageInfooo[] = [];
-  for (const packageName of packagesToCheck) {
-    const packageInfo = getPackageInfo(packageName);
-    if (packageInfo) {
-      packageInfoList.push(packageInfo);
+      // Extract package names from parsed JSON
+      const packageNames = Object.keys(packageData.dependencies);
+  
+      // Get package information for each package name 
+      const packageInfoList: (PackageInfooo | null)[] = packageNames.map((packageName) =>
+        getPackageInfo(packageName)
+      );
+  
+      return packageInfoList.filter((p) => p !== null) as PackageInfooo[];
+    } catch (error) {
+      console.error(`Error getting information for all packages: ${error}`);
+      return [];
     }
   }
+  
+  // Example usage
+//   const packagesToCheck = ['typescript', 'semver', 'xml2js'];
+//   const packageInfoList: PackageInfooo[] = [];
+//   for (const packageName of packagesToCheck) {
+//     const packageInfo = getPackageInfo(packageName);
+//     if (packageInfo) {
+//       packageInfoList.push(packageInfo);
+//     }
+//   }
 
-
+const packageInfoList = getAllPackageInfo();
   console.log(`New bla bla package info list: ${JSON.stringify(packageInfoList, null, 2)}`)
 
 //==============================
