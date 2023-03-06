@@ -148,14 +148,14 @@ interface NPMPackageSmall {
 
 import { execSync } from 'child_process';
 
-interface PackageInfo {
+interface PackageInfooo {
     name: string;
     currentVersion: string;
     latestVersion: string;
     resolved: string;
   }
   
-  function getPackageInfo(packageName: string): PackageInfo | null {
+  function getPackageInfo(packageName: string): PackageInfooo | null {
     try {
       // Get package information using `npm ls` and parse JSON output
       const packageData = JSON.parse(
@@ -163,15 +163,11 @@ interface PackageInfo {
       );
   
       // Extract package information from parsed JSON
-      const packageInfo: PackageInfo = {
+      const packageInfo: PackageInfooo = {
           name: packageName,
           currentVersion: packageData.dependencies[packageName].version,
           latestVersion: '',
           resolved: packageData.dependencies[packageName].resolved,
-          //integrity: packageData.dependencies[packageName].integrity,
-          nugetName: '',
-          nugetCurrentVersion: '',
-          nugetSource: ''
       };
   
       // Check if package is outdated using `npm outdated`
