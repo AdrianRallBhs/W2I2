@@ -524,73 +524,6 @@ export async function getDotnetSubmodules(): Promise<Submodule[]> {
     return outdatedPackages;
   }
 
-
-//   export async function getAllNugetPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
-//     const allPackages: NugetPackageInfo[] = [];
-  
-//     for (const project of projectList) {
-//       for (const source of sourceList) {
-//         const output = child_process.execSync(`dotnet list ${project} package --highest-minor --all-versions --source ${source}`);
-//         const lines = output.toString().split('\n');
-//         let packageName: string = '';
-//         let currentVersion: string = '';
-//         let latestVersion: string = '';
-//         let resolvedVersion: string = '';
-//         for (const line of lines) {
-//           if (line.includes('Project')) {
-//             // skip line
-//           } else if (line.includes('>')) {
-//             const parts = line.split(/ +/);
-//             packageName = parts[1];
-//             packageName = parts[2];
-//             currentVersion = parts[3];
-//             resolvedVersion = parts[4];
-//             latestVersion = parts[5];
-//             allPackages.push({ project, source, packageName, currentVersion, resolvedVersion, latestVersion });
-//           } else {
-//             const parts = line.split(/ +/);
-//             if (parts.length > 2) {
-//               packageName = parts[0];
-//               currentVersion = parts[1];
-//               latestVersion = parts[2];
-//               resolvedVersion = latestVersion;
-//               allPackages.push({ project, source, packageName, currentVersion, resolvedVersion, latestVersion });
-//             }
-//           }
-//         }
-//       }
-//     }
-  
-//     return allPackages;
-//   }
-  
-// async function getAllNuGetPackages(projectList: string[], sourceList: string[]): Promise<AllNugetPackageInfo[]> {
-//     const allPackages: AllNugetPackageInfo[] = [];
-  
-//     for (const project of projectList) {
-//       for (const source of sourceList) {
-//         const output = child_process.execSync(`dotnet list ${project} package --source ${source}`);
-//         const lines = output.toString().split('\n');
-//         let packageName: string = '';
-//         let currentVersion: string = '';
-//         for (const line of lines) {
-//           if (line.includes('Project') && line.includes('has the following updates')) {
-//           } else if (line.includes('>')) {
-//             const parts = line.split(/ +/);
-//             packageName = parts[1];
-//             packageName = parts[2];
-//             currentVersion = parts[3];
-//           }
-//         }
-//         if (packageName && currentVersion) {
-//           allPackages.push({ project, source, packageName, currentVersion });
-//         }
-//       }
-//     }
-  
-//     return allPackages;
-//   }
-
 async function getAllNuGetPackages(projectList: string[], sourceList: string[]): Promise<AllNugetPackageInfo[]> {
   const allPackages: AllNugetPackageInfo[] = [];
 
@@ -605,7 +538,8 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
         } else if (line.includes('>')) {
           const parts = line.split(/ +/);
           packageName = parts[1];
-          currentVersion = parts[2];
+          packageName = parts[2];
+          currentVersion = parts[3];
           allPackages.push({ project, source, packageName, currentVersion });
         }
       }
