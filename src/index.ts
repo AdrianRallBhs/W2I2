@@ -597,57 +597,45 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
 //   }
   
 export async function getAllNuGetPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
-    const allPackages: NugetPackageInfo[] = [];
+    const nugetPackages: NugetPackageInfo[] = [];
   
     for (const project of projectList) {
       for (const source of sourceList) {
-        try {
-          // Get a list of all packages for the project and source
-          const listOutput = child_process.execSync(`dotnet list ${project} package --source ${source}`);
-          const listLines = listOutput.toString().split('\n');
+        const output = child_process.execSync(`dotnet list ${project} package --source ${source}`);
+        const lines = output.toString().split('\n');
+        
+        for (const line of lines) {
+          if (line.startsWith(' ') && !line.startsWith('   ')) {
+            const parts = line.trim().split(' ');
   
-          // Get a list of all outdated packages for the project and source
-          const outdatedOutput = child_process.execSync(`dotnet list ${project} package --highest-minor --outdated --source ${source}`);
-          const outdatedLines = outdatedOutput.toString().split('\n');
-          const outdatedPackages: { [name: string]: { currentVersion: string, latestVersion: string } } = {};
-          for (const line of outdatedLines) {
-            if (line.startsWith(' ') || !line.includes(' ')) {
-              continue;
-            }
-            const parts = line.split(/ +/);
-            outdatedPackages[parts[0]] = {
-              currentVersion: parts[1],
-              latestVersion: parts[2],
-            };
-          }
+            if (parts.length >= 3) {
+              const packageName = parts[0];
+              const currentVersion = parts[1];
+              const latestVersionOutput = child_process.execSync(`dotnet list ${project} package ${packageName} --highest-minor --all-versions --source ${source}`);
+              const latestVersionLines = latestVersionOutput.toString().split('\n');
+              let latestVersion = '';
   
-          // Parse the output of the `dotnet list` command to get information about each package
-          let packageName: string = '';
-          let currentVersion: string = '';
-          let latestVersion: string = '';
-          let resolvedVersion: string = '';
-          for (const line of listLines) {
-            if (line.startsWith(' ') || !line.includes(' ')) {
-              continue;
+              for (const latestVersionLine of latestVersionLines) {
+                if (latestVersionLine.startsWith(' ')) {
+                  const latestVersionParts = latestVersionLine.trim().split(' ');
+  
+                  if (latestVersionParts.length >= 3) {
+                    latestVersion = latestVersionParts[1];
+                  }
+                }
+              }
+  
+              if (latestVersion !== '' && currentVersion !== latestVersion) {
+                nugetPackages.push({ project, source, packageName, currentVersion, resolvedVersion: currentVersion, latestVersion });
+              } else {
+                nugetPackages.push({ project, source, packageName, currentVersion, resolvedVersion: currentVersion, latestVersion: currentVersion });
+              }
             }
-            const parts = line.split(/ +/);
-            packageName = parts[0];
-            currentVersion = parts[1];
-            resolvedVersion = parts[2];
-            latestVersion = outdatedPackages[packageName]?.latestVersion || currentVersion;
-            allPackages.push({ project, source, packageName, currentVersion, resolvedVersion, latestVersion });
-          }
-        } catch (error: Error | any) {
-          const errorMessage = error.stderr.toString().trim();
-          if (errorMessage.includes('A project or solution file could not be found')) {
-            continue;
-          } else {
-            throw new Error(`Error while getting packages in project ${project} and source ${source}: ${errorMessage}`);
           }
         }
       }
     }
   
-    return allPackages;
+    return nugetPackages;
   }
-
+  
