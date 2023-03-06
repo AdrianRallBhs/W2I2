@@ -46,7 +46,7 @@ interface Output {
     repository: Repository;
     InternnpmPackages: PackageInfooo[];
     ExternnpmPackages: PackageInfooo[];
-    nugetPackages: NugetPackageInfo[];
+    nugetPackages: NugetPackageInfo[][];
     submodules: Submodule[];
     updateStrategy: string;
     dependendencies: DependentProject[];
