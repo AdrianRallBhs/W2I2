@@ -602,7 +602,7 @@ export async function getAllNuGetPackages(projectList: string[], sourceList: str
     for (const project of projectList) {
       for (const source of sourceList) {
         const output = child_process.execSync(`dotnet list ${project} package --source ${source}`);
-        console.error(`Command 'dotnet list ${project} package --source ${source}' exited with code Error`);
+        console.error(`Command 'dotnet list ${project} package --source ${source}' exited with code ${Error}`);
         const lines = output.toString().split('\n');
         
         for (const line of lines) {
