@@ -73,14 +73,7 @@ interface Submodule {
 
 
 // // ===========================works ===========================================
-interface NugetPackageInfo {
-    project: string;
-    source: string;
-    packageName: string;
-    currentVersion: string;
-    resolvedVersion: string;
-    latestVersion: string;
-}
+
 
 
 //=========================================
