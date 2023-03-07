@@ -53,8 +53,9 @@ interface Output {
   repository: Repository;
   InternnpmPackages: PackageInfooo[];
   ExternnpmPackages: PackageInfooo[];
-  OutdatedNugetPackages: NugetPackageInfo[];
-  AllNugetPackages: AllNugetPackageInfo[];
+  //OutdatedNugetPackages: NugetPackageInfo[];
+  InternNugetPackages: AllNugetPackageInfo[];
+  ExternNugetPackages: AllNugetPackageInfo[];
   submodules: Submodule[];
   updateStrategy: string;
   NugetDependencies: NugetDependentProject[];
@@ -301,8 +302,9 @@ export async function runRepoInfo() {
     },
     InternnpmPackages: [],
     ExternnpmPackages: [],
-    OutdatedNugetPackages: [],
-    AllNugetPackages: [],
+   // OutdatedNugetPackages: [],
+    InternNugetPackages: [],
+    ExternNugetPackages: [],
     submodules: [],
     updateStrategy: updateStrategy,
     NugetDependencies: [],
@@ -323,11 +325,12 @@ export async function runRepoInfo() {
   // console.log(`New bla bla package info list: ${JSON.stringify(packageInfoList, null, 2)}`)
   output.InternnpmPackages = await getAllPackageInfo().intern;
   output.ExternnpmPackages = await getAllPackageInfo().extern;
-  output.OutdatedNugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
-  output.AllNugetPackages = await getAllNuGetPackages(dotNetProjects, ListOfSources);
+  // output.OutdatedNugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
+  output.InternNugetPackages = await (await getAllNuGetPackages(dotNetProjects, ListOfSources)).intern;
+  output.ExternNugetPackages = await (await getAllNuGetPackages(dotNetProjects, ListOfSources)).extern;
   output.submodules = await getDotnetSubmodules();
   output.updateStrategy = updateStrategy;
-  output.NugetDependencies = await getDependentProjects(output.AllNugetPackages);
+  output.NugetDependencies = await getDependentProjects(output.InternNugetPackages);
   output.NpmDependencies = await getNpmDependentProjects(output.ExternnpmPackages);
 
   console.log(`DependentProjects: ${JSON.stringify(getDependentProjects, null, 2)}`);
@@ -469,7 +472,32 @@ export async function getOutdatedPackages(projectList: string[], sourceList: str
   return outdatedPackages;
 }
 
-async function getAllNuGetPackages(projectList: string[], sourceList: string[]): Promise<AllNugetPackageInfo[]> {
+// async function getAllNuGetPackages(projectList: string[], sourceList: string[]): Promise<AllNugetPackageInfo[]> {
+//   const allPackages: AllNugetPackageInfo[] = [];
+
+//   for (const project of projectList) {
+//     for (const source of sourceList) {
+//       const output = child_process.execSync(`dotnet list ${project} package --source ${source}`);
+//       const lines = output.toString().split('\n');
+//       let packageName: string = '';
+//       let currentVersion: string = '';
+//       for (const line of lines) {
+//         if (line.includes('Project')) {
+//         } else if (line.includes('>')) {
+//           const parts = line.split(/ +/);
+//           packageName = parts[2];
+//           currentVersion = parts[3];
+//           allPackages.push({ project, source, packageName, currentVersion });
+//         }
+//       }
+//     }
+//   }
+
+//   return allPackages;
+// }
+
+
+async function getAllNuGetPackages(projectList: string[], sourceList: string[]): Promise<{intern: AllNugetPackageInfo[], extern: AllNugetPackageInfo[]}> {
   const allPackages: AllNugetPackageInfo[] = [];
 
   for (const project of projectList) {
@@ -490,8 +518,20 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
     }
   }
 
-  return allPackages;
+  const internPackages: AllNugetPackageInfo[] = [];
+  const externPackages: AllNugetPackageInfo[] = [];
+
+  allPackages.forEach((packageInfo) => {
+    if (packageInfo.source.includes('https://nuget.github.bhs-world.com')) {
+      internPackages.push(packageInfo);
+    } else {
+      externPackages.push(packageInfo);
+    }
+  });
+
+  return {intern: internPackages, extern: externPackages};
 }
+
 
 function getDependentProjects(allNugetPackages: AllNugetPackageInfo[]): NugetDependentProject[] {
   const dependentProjects: NugetDependentProject[] = [];

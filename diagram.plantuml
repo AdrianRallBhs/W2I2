@@ -44,7 +44,10 @@
     "repository": {
       "type": "object",
       "properties": {
-        "name": {
+        "orgName": {
+          "type": "string"
+        },
+        "repoName": {
           "type": "string"
         },
         "currentReleaseTag": {
@@ -58,13 +61,14 @@
         }
       },
       "required": [
-        "name",
+        "orgName",
+        "repoName",
         "currentReleaseTag",
         "license",
         "sha"
       ]
     },
-    "npmPackages": {
+    "InternnpmPackages": {
       "type": "array",
       "items": [
         {
@@ -73,26 +77,54 @@
             "name": {
               "type": "string"
             },
-            "version": {
+            "currentVersion": {
               "type": "string"
             },
-            "repoName": {
+            "latestVersion": {
               "type": "string"
             },
-            "owner": {
+            "resolved": {
               "type": "string"
             }
           },
           "required": [
             "name",
-            "version",
-            "repoName",
-            "owner"
+            "currentVersion",
+            "latestVersion",
+            "resolved"
           ]
         }
       ]
     },
-    "nugetPackages": {
+    "ExternnpmPackages": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "currentVersion": {
+              "type": "string"
+            },
+            "latestVersion": {
+              "type": "string"
+            },
+            "resolved": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "currentVersion",
+            "latestVersion",
+            "resolved"
+          ]
+        }
+      ]
+    },
+    "OutdatedNugetPackages": {
       "type": "array",
       "items": [
         {
@@ -128,6 +160,34 @@
         }
       ]
     },
+    "AllNugetPackages": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "project": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string"
+            },
+            "packageName": {
+              "type": "string"
+            },
+            "currentVersion": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "project",
+            "source",
+            "packageName",
+            "currentVersion"
+          ]
+        }
+      ]
+    },
     "submodules": {
       "type": "array",
       "items": [
@@ -155,7 +215,7 @@
     "updateStrategy": {
       "type": "string"
     },
-    "dependentProjects": {
+    "NugetDependencies": {
       "type": "array",
       "items": [
         {
@@ -164,25 +224,48 @@
             "name": {
               "type": "string"
             },
-            "owner": {
-              "type": "string"
-            },
-            "repository": {
-              "type": "string"
-            },
-            "usageType": {
-              "type": "string"
-            },
-            "versionRange": {
+            "currentVersion": {
               "type": "string"
             }
           },
           "required": [
             "name",
-            "owner",
-            "repository",
-            "usageType",
-            "versionRange"
+            "currentVersion"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "currentVersion": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "currentVersion"
+          ]
+        }
+      ]
+    },
+    "NpmDependencies": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "currentVersion": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "currentVersion"
           ]
         }
       ]
@@ -190,11 +273,14 @@
   },
   "required": [
     "repository",
-    "npmPackages",
-    "nugetPackages",
+    "InternnpmPackages",
+    "ExternnpmPackages",
+    "OutdatedNugetPackages",
+    "AllNugetPackages",
     "submodules",
     "updateStrategy",
-    "dependentProjects"
+    "NugetDependencies",
+    "NpmDependencies"
   ]
 }
 @endjson
