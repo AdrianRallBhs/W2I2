@@ -23,11 +23,17 @@ interface Repository {
   sha: string;
 }
 
-interface Submodule {
-  sha: string;
-  submoduleName: string;
-  referenceBranch: string;
+// interface Submodule {
+//   sha: string;
+//   submoduleName: string;
+//   referenceBranch: string;
+// }
 
+interface Submodule {
+  name: string;
+  path: string;
+  url: string;
+  sha: string;
 }
 
 
@@ -56,7 +62,8 @@ interface Output {
   //OutdatedNugetPackages: NugetPackageInfo[];
   InternNugetPackages: AllNugetPackageInfo[];
   ExternNugetPackages: AllNugetPackageInfo[];
-  submodules: Submodule[];
+  InternSubmodules: Submodule[];
+  ExternSubmodules: Submodule[];
   updateStrategy: string;
   NugetDependencies: NugetDependentProject[];
   NpmDependencies: NpmDependentProject[];
@@ -74,11 +81,18 @@ interface Output {
 // };
 
 
-interface Submodule {
-  sha: string;
-  submoduleName: string;
-  referenceBranch: string;
+// interface Submodule {
+//   sha: string;
+//   submoduleName: string;
+//   referenceBranch: string;
+// }
 
+interface Submodule {
+  name: string;
+  path: string;
+  url: string;
+  sha: string;
+  organization: 'intern' | 'extern';
 }
 
 
@@ -305,7 +319,8 @@ export async function runRepoInfo() {
    // OutdatedNugetPackages: [],
     InternNugetPackages: [],
     ExternNugetPackages: [],
-    submodules: [],
+    InternSubmodules: [],
+    ExternSubmodules: [],
     updateStrategy: updateStrategy,
     NugetDependencies: [],
     NpmDependencies: []
@@ -328,7 +343,8 @@ export async function runRepoInfo() {
   // output.OutdatedNugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
   output.InternNugetPackages = await (await getAllNuGetPackages(dotNetProjects, ListOfSources)).intern;
   output.ExternNugetPackages = await (await getAllNuGetPackages(dotNetProjects, ListOfSources)).extern;
-  output.submodules = await getDotnetSubmodules();
+  output.InternSubmodules = await getSubmodules();
+  output.ExternSubmodules = await getSubmodules();
   output.updateStrategy = updateStrategy;
   output.NugetDependencies = await getDependentProjects(output.InternNugetPackages);
   output.NpmDependencies = await getNpmDependentProjects(output.ExternnpmPackages);
@@ -375,6 +391,33 @@ export async function getDotnetSources(): Promise<string[]> {
   });
 }
 
+async function getSubmodules(): Promise<Submodule[]> {
+  try {
+    const output = execSync('git submodule status --recursive');
+    const submoduleLines = output.toString().split('\n');
+
+    const submodules: Submodule[] = [];
+
+    submoduleLines.forEach((line) => {
+      if (line.length > 0) {
+        const parts = line.trim().split(/ +/);
+        const sha = parts[0];
+        const url = parts[1];
+        const name = url.split('/').slice(-1)[0].replace(/.git$/, '');
+        const path = parts[2];
+        submodules.push({
+          name, path, url, sha,
+          organization: 'extern'
+        });
+      }
+    });
+
+    return submodules;
+  } catch (error) {
+    console.error(`Error getting submodules: ${error}`);
+    return [];
+  }
+}
 // =====================================================
 
 
@@ -413,32 +456,32 @@ export async function findALLCSPROJmodules(): Promise<string[]> {
 }
 
 
-export async function getDotnetSubmodules(): Promise<Submodule[]> {
-  return new Promise<Submodule[]>((resolve, reject) => {
-    exec('git submodule', (error, stdout, stderr) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-      if (stderr) {
-        reject(stderr);
-        return;
-      }
+// export async function getDotnetSubmodules(): Promise<Submodule[]> {
+//   return new Promise<Submodule[]>((resolve, reject) => {
+//     exec('git submodule', (error, stdout, stderr) => {
+//       if (error) {
+//         reject(error);
+//         return;
+//       }
+//       if (stderr) {
+//         reject(stderr);
+//         return;
+//       }
 
-      const submodules = stdout
-        .split('\n')
-        .map(submodule => submodule.trim())
-        .filter(submodule => submodule !== '');
+//       const submodules = stdout
+//         .split('\n')
+//         .map(submodule => submodule.trim())
+//         .filter(submodule => submodule !== '');
 
-      const submoduleObjects: Submodule[] = submodules.map(submodule => {
-        const [sha, submoduleName, referenceBranch] = submodule.split(' ');
-        return { sha, submoduleName, referenceBranch: referenceBranch.slice(1, -1) };
-      });
+//       const submoduleObjects: Submodule[] = submodules.map(submodule => {
+//         const [sha, submoduleName, referenceBranch] = submodule.split(' ');
+//         return { sha, submoduleName, referenceBranch: referenceBranch.slice(1, -1) };
+//       });
 
-      resolve(submoduleObjects);
-    });
-  });
-}
+//       resolve(submoduleObjects);
+//     });
+//   });
+// }
 
 //======================funktioniert =============================
 export async function getOutdatedPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
