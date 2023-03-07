@@ -343,8 +343,8 @@ export async function runRepoInfo() {
   // output.OutdatedNugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
   output.InternNugetPackages = await (await getAllNuGetPackages(dotNetProjects, ListOfSources)).intern;
   output.ExternNugetPackages = await (await getAllNuGetPackages(dotNetProjects, ListOfSources)).extern;
-  output.InternSubmodules = await getSubmodules();
-  output.ExternSubmodules = await getSubmodules();
+  output.InternSubmodules = await (await getSubmodules()).intern;
+  output.ExternSubmodules = await (await getSubmodules()).extern;
   output.updateStrategy = updateStrategy;
   output.NugetDependencies = await getDependentProjects(output.InternNugetPackages);
   output.NpmDependencies = await getNpmDependentProjects(output.ExternnpmPackages);
@@ -391,8 +391,7 @@ export async function getDotnetSources(): Promise<string[]> {
   });
 }
 
-async function getSubmodules(): Promise<Submodule[]> {
-  try {
+async function getSubmodules(): Promise<{intern: Submodule[], extern: Submodule[]}> {
     const output = execSync('git submodule status --recursive');
     const submoduleLines = output.toString().split('\n');
 
@@ -412,11 +411,18 @@ async function getSubmodules(): Promise<Submodule[]> {
       }
     });
 
-    return submodules;
-  } catch (error) {
-    console.error(`Error getting submodules: ${error}`);
-    return [];
+const internSubmodule: Submodule[] = [];
+const externSubmodule: Submodule[] = [];
+
+submodules.forEach((submodule) => {
+  if (submodule.organization == 'extern') {
+    externSubmodule.push(submodule);
+  } else {
+    internSubmodule.push(submodule)
   }
+})
+
+    return {intern: internSubmodule, extern: externSubmodule};
 }
 // =====================================================
 
