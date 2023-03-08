@@ -370,7 +370,6 @@ export async function runRepoInfo() {
 runRepoInfo();
 
 
-const FilterSources = core.getMultilineInput("nuget-source").filter(s => s.trim() !== "")
 
 export async function getDotnetSources(): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
@@ -576,7 +575,7 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
 
   allPackages.forEach((packageInfo) => {
     sources.forEach(element => {
-      if (packageInfo.source.match(element)) {
+      if (packageInfo.packageName.match(element)) {
       internPackages.push(packageInfo);
     } else {
       externPackages.push(packageInfo);
