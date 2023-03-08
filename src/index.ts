@@ -579,7 +579,8 @@ sources.forEach(element => {
   allPackages.forEach((packageInfo) => {
     const isInternal = packageInfo.source.includes(`${element}`);
     console.log(`${isInternal} bei Project ${packageInfo.project} mit source ${element}`)
-    //const isInternal = packageInfo.project === './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
+    const isInternal2 = packageInfo.project === './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
+    console.log(`isInternal2 has value ${isInternal2}`)
     //const isInternal = sources.includes(packageInfo.project);
     if (isInternal) {
       internPackages.push(packageInfo);
