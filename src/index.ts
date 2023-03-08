@@ -13,7 +13,7 @@ import * as child_process from 'child_process';
 // ==================================================================================================
 
 const updateStrategy = core.getInput('updateStrategy', { required: false }) || 'MINOR';
-const sources = core.getMultilineInput('sources', { required: false }).filter(s => s.trim() !== "");
+const sources = core.getMultilineInput('sources', { required: true }).filter(s => s.trim() !== "");
 
 
 interface Repository {
@@ -573,7 +573,7 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
 
   allPackages.forEach((packageInfo) => {
     sources.forEach(element => {
-      if (packageInfo.source.includes(element)) {
+      if (packageInfo.source.match(element)) {
       internPackages.push(packageInfo);
     } else {
       externPackages.push(packageInfo);

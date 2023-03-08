@@ -23,7 +23,7 @@ inputs:
     default: 'MINOR'
   sources:
     description: 'List of sources seperated by new line'
-    required: false
+    required: true
     default: ''
 
 
