@@ -16,7 +16,7 @@ const updateStrategy = core.getInput('updateStrategy', { required: false }) || '
 const sources = core.getMultilineInput('sources', { required: true }).flatMap(s => s.split(/\r?\n/)).map(s => s.trim());
 const npmSources = core.getMultilineInput('npmSources', { required: false }).filter(s => s.trim() !== "");
 
-console.log(`Sources output is : ${sources}`);
+console.log(`Sources output is : ${sources}; \n 0: ${sources[0]} \n 1: ${sources[1]}`);
 
 interface Repository {
   orgName: any;
