@@ -24,7 +24,7 @@ inputs:
   sources:
     description: 'List of sources seperated by new line'
     required: true
-    default: './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
+    default: ''
   npmSources:
     description: 'List of sources for npm seperated by new line'
     required: false
