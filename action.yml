@@ -24,14 +24,11 @@ inputs:
   sources:
     description: 'List of sources for nuget seperated by new line'
     required: false
-    default: |
-      './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
+    default: ''
   npmSources:
     description: 'List of sources for npm seperated by new line'
     required: false
-    default: |
-      '@actions/core'
-      'semver'
+    default: ''
   submoduleSources:
     description: 'List of sources for npm seperated by new line'
     required: false

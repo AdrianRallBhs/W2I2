@@ -189,7 +189,7 @@ function getAllPackageInfo(): { intern: PackageInfooo[], extern: PackageInfooo[]
 
   packageInfoList.forEach((packageInfo: (PackageInfooo | null)) => {
     if(packageInfo != null) {
-      const isInternal = npmSources.some(npmSource => npmSource.includes(packageInfo.name));
+      const isInternal = npmSources.some(npmSource => npmSource.includes(packageInfo.resolved));
       if (isInternal) {
         internPackages.push(packageInfo);
       } else {
@@ -590,7 +590,7 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
 
 
     allPackages.forEach((packageInfo) => {
-        const isInternal = sources.some(source => source.includes(packageInfo.project));
+        const isInternal = sources.some(source => source.includes(packageInfo.source));
         if (isInternal) {
           internPackages.push(packageInfo);
         } else {
