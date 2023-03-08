@@ -13,6 +13,7 @@ import * as child_process from 'child_process';
 // ==================================================================================================
 
 const updateStrategy = core.getInput('updateStrategy', { required: false }) || 'MINOR';
+const sources = core.getMultilineInput('sources', { required: false });
 
 
 interface Repository {
@@ -571,11 +572,14 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
   const externPackages: AllNugetPackageInfo[] = [];
 
   allPackages.forEach((packageInfo) => {
-    if (packageInfo.source.includes('https://nuget.github.bhs-world.com')) {
+    sources.forEach(element => {
+      if (packageInfo.source.includes(element)) {
       internPackages.push(packageInfo);
     } else {
       externPackages.push(packageInfo);
     }
+    });
+    
   });
 
   return {intern: internPackages, extern: externPackages};
