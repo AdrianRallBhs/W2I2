@@ -185,15 +185,6 @@ function getAllPackageInfo(): { intern: PackageInfooo[], extern: PackageInfooo[]
     const internPackages: PackageInfooo[] = [];
     const externPackages: PackageInfooo[] = [];
 
-//     allPackages.forEach((packageInfo) => {
-//       const isInternal = sources.some(source => source.includes(packageInfo.project));
-//       if (isInternal) {
-//         internPackages.push(packageInfo);
-//       } else {
-//         externPackages.push(packageInfo);
-//       }
-// })
-
 
   packageInfoList.forEach((packageInfo: (PackageInfooo | null)) => {
     if(packageInfo != null) {
