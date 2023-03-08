@@ -45,7 +45,7 @@ jobs:
           sources: >-
             'https://api.nuget.org/v3/index.json' ||
             'https://bhs-world.org'
-          npmSource: >-
+          npmSources: >-
             '@actions/core' ||
             '@digitalenginnering'
 
