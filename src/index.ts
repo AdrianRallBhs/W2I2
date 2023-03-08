@@ -573,15 +573,15 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
   const internPackages: AllNugetPackageInfo[] = [];
   const externPackages: AllNugetPackageInfo[] = [];
 
+  const s = sources;
+
   allPackages.forEach((packageInfo) => {
-    sources.forEach(element => {
-      const isInternal = packageInfo.project === element;
+    const isInternal = packageInfo.project === './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj';
     if (isInternal) {
       internPackages.push(packageInfo);
     } else {
       externPackages.push(packageInfo);
     }
-    });
   });
 
   return {intern: internPackages, extern: externPackages};
