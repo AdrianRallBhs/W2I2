@@ -44,7 +44,8 @@ jobs:
           output-path: ./report.json
           sources: >-
             'https://api.nuget.org/v3/index.json' ||
-            'Microsoft.AspNetCore.Razor'
+            'Microsoft.AspNetCore.Razor' ||
+            './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
           npmSources: >-
             '@actions/core' ||
             '@digitalenginnering' 
