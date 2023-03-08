@@ -573,7 +573,7 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
 
   allPackages.forEach((packageInfo) => {
     sources.forEach(element => {
-      if (packageInfo.source.includes(element.toString())) {
+      if (packageInfo.source.match(element)) {
       internPackages.push(packageInfo);
     } else {
       externPackages.push(packageInfo);
