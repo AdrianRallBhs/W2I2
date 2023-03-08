@@ -592,12 +592,15 @@ function getDependentProjects(allNugetPackages: AllNugetPackageInfo[]): NugetDep
   for (const nugetPackage of allNugetPackages) {
     //https://api.nuget.org/v3/index.json
     //https://nuget.github.bhs-world.com
-    if (nugetPackage.source === "https://api.nuget.org/v3/index.json") {
-      dependentProjects.push({
-        name: nugetPackage.packageName,
-        currentVersion: nugetPackage.currentVersion,
-      });
-    }
+    sources.forEach(element => {
+      if (nugetPackage.source.match(element)) {
+        dependentProjects.push({
+          name: nugetPackage.packageName,
+          currentVersion: nugetPackage.currentVersion,
+        });
+      }
+    })
+    
   }
 
   return dependentProjects;
