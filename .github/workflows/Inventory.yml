@@ -44,9 +44,9 @@ jobs:
           output-path: ./report.json
           # sources: |
           #   './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
-          npmSources: >-
-            '@actions/core' ||
-            '@digitalenginnering' 
+          # npmSources: >-
+          #   '@actions/core' ||
+          #   '@digitalenginnering' 
 
       - name: Write report to file
         run: echo '${{ steps.report.outputs.output }}' > ./report.json

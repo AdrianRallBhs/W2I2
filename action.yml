@@ -22,7 +22,7 @@ inputs:
     required: false
     default: 'MINOR'
   sources:
-    description: 'List of sources seperated by new line'
+    description: 'List of sources for nuget seperated by new line'
     required: false
     default: |
       './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
