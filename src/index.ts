@@ -189,7 +189,6 @@ function getAllPackageInfo(): { intern: PackageInfooo[], extern: PackageInfooo[]
   packageInfoList.forEach((packageInfo: (PackageInfooo | null)) => {
     if(packageInfo != null) {
       const isInternal = sources.some(npmSources => npmSources.includes(packageInfo.name));
-
       if (isInternal) {
         internPackages.push(packageInfo);
       } else {
