@@ -13,7 +13,7 @@ import * as child_process from 'child_process';
 // ==================================================================================================
 
 const updateStrategy = core.getInput('updateStrategy', { required: false }) || 'MINOR';
-const sources = core.getMultilineInput('sources', { required: true }).filter(s => s.trim() !== "");
+const sources = core.getMultilineInput('sources', { required: true }).map(s => s.trim()).filter(s => s.trim() !== "");
 const npmSources = core.getMultilineInput('npmSources', { required: false }).filter(s => s.trim() !== "");
 
 
