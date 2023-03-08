@@ -185,10 +185,19 @@ function getAllPackageInfo(): { intern: PackageInfooo[], extern: PackageInfooo[]
     const internPackages: PackageInfooo[] = [];
     const externPackages: PackageInfooo[] = [];
 
+//     allPackages.forEach((packageInfo) => {
+//       const isInternal = sources.some(source => source.includes(packageInfo.project));
+//       if (isInternal) {
+//         internPackages.push(packageInfo);
+//       } else {
+//         externPackages.push(packageInfo);
+//       }
+// })
+
 
   packageInfoList.forEach((packageInfo: (PackageInfooo | null)) => {
     if(packageInfo != null) {
-      const isInternal = sources.some(npmSources => npmSources.includes(packageInfo.name));
+      const isInternal = npmSources.some(npmSource => npmSource.includes(packageInfo.name));
       if (isInternal) {
         internPackages.push(packageInfo);
       } else {
@@ -363,7 +372,7 @@ export async function runRepoInfo() {
   output.ExternSubmodules = await (await getSubmodules()).extern;
   output.updateStrategy = updateStrategy;
   output.NugetDependencies = await getDependentProjects(output.InternNugetPackages);
-  output.NpmDependencies = await getNpmDependentProjects(output.ExternnpmPackages);
+  output.NpmDependencies = await getNpmDependentProjects(output.InternnpmPackages);
 
   console.log(`DependentProjects: ${JSON.stringify(getDependentProjects, null, 2)}`);
   // Write output to file
