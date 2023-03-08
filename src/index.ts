@@ -588,6 +588,7 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
     //const isInternal = sources.includes(packageInfo.project);
     if (isInternal2) {
       internPackages.push(packageInfo);
+      isInternal2 = false
     } else {
       externPackages.push(packageInfo);
     }
