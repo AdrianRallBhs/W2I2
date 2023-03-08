@@ -578,6 +578,7 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
 sources.forEach(element => {
   allPackages.forEach((packageInfo) => {
     const isInternal = packageInfo.project.includes(element);
+    console.log(`${isInternal} bei Project ${packageInfo.project} mit source ${element}`)
     //const isInternal = packageInfo.project === './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
     //const isInternal = sources.includes(packageInfo.project);
     if (isInternal) {
