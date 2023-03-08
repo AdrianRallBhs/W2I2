@@ -580,11 +580,12 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
     //const isInternal2 = packageInfo.project === './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
     //const isInternal2 = sources[0].search(packageInfo.project); //=== './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
     let isInternal2 = sources[0].search(packageInfo.project);
+    const bo = convertToBool(isInternal2);
 
-    console.log(`isInternal2 has value ${isInternal2}`);
+    console.log(`isInternal2 has value ${convertToBool(isInternal2)}`);
     console.log(`sources has value ${sources[0]} and packageInfo is ${ packageInfo.project}`);
     //const isInternal = sources.includes(packageInfo.project);
-    if (isInternal2) {
+    if (bo) {
       internPackages.push(packageInfo);
     } else {
       externPackages.push(packageInfo);
@@ -594,6 +595,15 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
   
 
   return {intern: internPackages, extern: externPackages};
+}
+
+function convertToBool(input: number) {
+  if(input == 1) {
+    return true;
+  }
+  else {
+    return false;
+  }
 }
 
 
