@@ -591,8 +591,6 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
       } else {
         externPackages.push(packageInfo);
       }
-    
-  });
   
 })
   
