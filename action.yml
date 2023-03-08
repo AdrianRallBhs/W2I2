@@ -22,9 +22,11 @@ inputs:
     required: false
     default: 'MINOR'
   sources:
-    description: 'List of sources'
+    description: 'List of sources seperated by new line'
     required: false
-    default: 'https://api.nuget.org/v3/index.json'
+    default: |
+    'https://api.nuget.org/v3/index.json'
+    'https://bhs-world.org'
 
 
 runs:
