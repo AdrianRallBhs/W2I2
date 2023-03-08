@@ -43,7 +43,7 @@ jobs:
           branch-name: ${{ github.ref }}
           output-path: ./report.json
           sources: >-
-            './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
+            './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj' ||
             './Blazor5/BlazorApp5/BlazorApp5/BlazorApp5.csproj'
           npmSources: >-
             '@actions/core' ||
