@@ -188,11 +188,13 @@ function getAllPackageInfo(): { intern: PackageInfooo[], extern: PackageInfooo[]
     if (packageInfoList != null) {
       packageInfoList.forEach((packageInfo: (PackageInfooo | null)) => {
         if (packageInfo !== null) {
-          if (packageInfo.name.startsWith('@digitalengineering/')) {
-            internPackages.push(packageInfo);
-          } else {
-            externPackages.push(packageInfo);
-          }
+          npmSources.forEach(element => {
+            if (packageInfo.name.match(element)) {
+              internPackages.push(packageInfo);
+            } else {
+              externPackages.push(packageInfo);
+            }
+          })
         }
       });
     }
