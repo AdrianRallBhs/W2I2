@@ -14,6 +14,7 @@ import * as child_process from 'child_process';
 
 const updateStrategy = core.getInput('updateStrategy', { required: false }) || 'MINOR';
 const sources = core.getMultilineInput('sources', { required: true }).filter(s => s.trim() !== "");
+const npmSources = core.getMultilineInput('npmSources', { required: false }).filter(s => s.trim() !== "");
 
 
 interface Repository {
@@ -612,12 +613,16 @@ function getNpmDependentProjects(InternnpmPackages: PackageInfooo[]): NpmDepende
   for (const npmPackage of InternnpmPackages) {
     //@digitalengineering
     //https://nuget.github.bhs-world.com
-    if (npmPackage.name.includes("@actions/core")) {
-      dependentProjects.push({
-        name: npmPackage.name,
-        currentVersion: npmPackage.currentVersion,
-      });
-    }
+    //@actions/core
+    npmSources.forEach(element => {
+      if (npmPackage.name.match(element)) {
+        dependentProjects.push({
+          name: npmPackage.name,
+          currentVersion: npmPackage.currentVersion,
+        });
+      }
+    })
+    
   }
 
   return dependentProjects;

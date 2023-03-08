@@ -25,6 +25,10 @@ inputs:
     description: 'List of sources seperated by new line'
     required: true
     default: ''
+  npmSources:
+    description: 'List of sources for npm seperated by new line'
+    required: false
+    default: ''
 
 
 runs:
