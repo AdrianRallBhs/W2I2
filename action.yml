@@ -24,7 +24,7 @@ inputs:
   sources:
     description: 'List of sources seperated by new line'
     required: true
-    default: ''
+    default: 'Microsoft.AspNetCore.Razor'
   npmSources:
     description: 'List of sources for npm seperated by new line'
     required: false
