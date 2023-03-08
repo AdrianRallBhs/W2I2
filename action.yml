@@ -32,6 +32,11 @@ inputs:
     default: |
       '@actions/core'
       'semver'
+  submoduleSources:
+    description: 'List of sources for npm seperated by new line'
+    required: false
+    default: ''
+
 
 
 runs:

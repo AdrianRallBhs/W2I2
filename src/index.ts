@@ -15,6 +15,7 @@ import * as child_process from 'child_process';
 const updateStrategy = core.getInput('updateStrategy', { required: false }) || 'MINOR';
 const sources = core.getMultilineInput('sources', { required: false }).flatMap(s => s.split(/\r?\n/)).map(s => s.trim());
 const npmSources = core.getMultilineInput('npmSources', { required: false }).flatMap(s => s.split(/\r?\n/)).map(s => s.trim());
+const submoduleSources = core.getMultilineInput('submoduleSources', { required: false }).flatMap(s => s.split(/\r?\n/)).map(s => s.trim());
 
 
 interface Repository {
@@ -429,8 +430,10 @@ async function getSubmodules(): Promise<{intern: Submodule[], extern: Submodule[
 const internSubmodule: Submodule[] = [];
 const externSubmodule: Submodule[] = [];
 
+
 submodules.forEach((submodule) => {
-  if (submodule.organization == 'extern') {
+  const isInternal = submoduleSources.some(source => source.includes(submodule.organization));
+  if (isInternal) {
     externSubmodule.push(submodule);
   } else {
     internSubmodule.push(submodule)
@@ -607,7 +610,7 @@ function getDependentProjects(allNugetPackages: AllNugetPackageInfo[]): NugetDep
     //https://api.nuget.org/v3/index.json
     //https://nuget.github.bhs-world.com
     sources.forEach(element => {
-      if (nugetPackage.source.match(element)) {
+      if (nugetPackage.source.includes(element)) {
         dependentProjects.push({
           name: nugetPackage.packageName,
           currentVersion: nugetPackage.currentVersion,
@@ -628,7 +631,7 @@ function getNpmDependentProjects(InternnpmPackages: PackageInfooo[]): NpmDepende
     //https://nuget.github.bhs-world.com
     //@actions/core
     npmSources.forEach(element => {
-      if (npmPackage.name.match(element)) {
+      if (npmPackage.name.includes(element)) {
         dependentProjects.push({
           name: npmPackage.name,
           currentVersion: npmPackage.currentVersion,
