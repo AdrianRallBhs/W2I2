@@ -582,6 +582,9 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
     let isInternal2;
     if(sources[0].search(packageInfo.project)) {
     isInternal2 = true;
+    } else {
+      isInternal2 = false;
+    }
     console.log(`isInternal2 has value ${isInternal2}`);
     console.log(`sources has value ${sources[0]} and packageInfo is ${ packageInfo.project}`);
     //const isInternal = sources.includes(packageInfo.project);
@@ -590,7 +593,7 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
     } else {
       externPackages.push(packageInfo);
     }
-  }
+  
 })
   
 
