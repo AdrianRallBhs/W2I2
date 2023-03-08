@@ -16,6 +16,7 @@ const updateStrategy = core.getInput('updateStrategy', { required: false }) || '
 const sources = core.getMultilineInput('sources', { required: true }).map(s => s.trim()).filter(s => s.trim() !== "");
 const npmSources = core.getMultilineInput('npmSources', { required: false }).filter(s => s.trim() !== "");
 
+console.log(`Sources output is : ${sources}`);
 
 interface Repository {
   orgName: any;
@@ -576,7 +577,7 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
   const s = sources;
 
   allPackages.forEach((packageInfo) => {
-    const isInternal = packageInfo.project === sources[0];
+    const isInternal = packageInfo.project === './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj';
     if (isInternal) {
       internPackages.push(packageInfo);
     } else {
