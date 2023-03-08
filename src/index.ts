@@ -68,8 +68,8 @@ interface Output {
   InternSubmodules: Submodule[];
   ExternSubmodules: Submodule[];
   updateStrategy: string;
-  NugetDependencies: NugetDependentProject[];
-  NpmDependencies: NpmDependentProject[];
+  // NugetDependencies: NugetDependentProject[];
+  // NpmDependencies: NpmDependentProject[];
 }
 
 
@@ -339,8 +339,8 @@ export async function runRepoInfo() {
     InternSubmodules: [],
     ExternSubmodules: [],
     updateStrategy: updateStrategy,
-    NugetDependencies: [],
-    NpmDependencies: []
+  //   NugetDependencies: [],
+  //   NpmDependencies: []
   };
   // Get repository info
   const { data: repository } = await octokit.rest.repos.get({
@@ -363,10 +363,10 @@ export async function runRepoInfo() {
   output.InternSubmodules = await (await getSubmodules()).intern;
   output.ExternSubmodules = await (await getSubmodules()).extern;
   output.updateStrategy = updateStrategy;
-  output.NugetDependencies = await getDependentProjects(output.InternNugetPackages);
-  output.NpmDependencies = await getNpmDependentProjects(output.InternnpmPackages);
+  // output.NugetDependencies = await getDependentProjects(output.InternNugetPackages);
+  // output.NpmDependencies = await getNpmDependentProjects(output.InternnpmPackages);
 
-  console.log(`DependentProjects: ${JSON.stringify(getDependentProjects, null, 2)}`);
+
   // Write output to file
   const outputPath = core.getInput('output-path');
   try {
@@ -603,43 +603,43 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
 }
 
 
-function getDependentProjects(allNugetPackages: AllNugetPackageInfo[]): NugetDependentProject[] {
-  const dependentProjects: NugetDependentProject[] = [];
+// function getDependentProjects(allNugetPackages: AllNugetPackageInfo[]): NugetDependentProject[] {
+//   const dependentProjects: NugetDependentProject[] = [];
 
-  for (const nugetPackage of allNugetPackages) {
-    //https://api.nuget.org/v3/index.json
-    //https://nuget.github.bhs-world.com
-    sources.forEach(element => {
-      if (nugetPackage.source.includes(element)) {
-        dependentProjects.push({
-          name: nugetPackage.packageName,
-          currentVersion: nugetPackage.currentVersion,
-        });
-      }
-    })
+//   for (const nugetPackage of allNugetPackages) {
+//     //https://api.nuget.org/v3/index.json
+//     //https://nuget.github.bhs-world.com
+//     sources.forEach(element => {
+//       if (nugetPackage.source.includes(element)) {
+//         dependentProjects.push({
+//           name: nugetPackage.packageName,
+//           currentVersion: nugetPackage.currentVersion,
+//         });
+//       }
+//     })
     
-  }
+//   }
 
-  return dependentProjects;
-}
+//   return dependentProjects;
+// }
 
-function getNpmDependentProjects(InternnpmPackages: PackageInfooo[]): NpmDependentProject[] {
-  const dependentProjects: NpmDependentProject[] = [];
+// function getNpmDependentProjects(InternnpmPackages: PackageInfooo[]): NpmDependentProject[] {
+//   const dependentProjects: NpmDependentProject[] = [];
 
-  for (const npmPackage of InternnpmPackages) {
-    //@digitalengineering
-    //https://nuget.github.bhs-world.com
-    //@actions/core
-    npmSources.forEach(element => {
-      if (npmPackage.name.includes(element)) {
-        dependentProjects.push({
-          name: npmPackage.name,
-          currentVersion: npmPackage.currentVersion,
-        });
-      }
-    })
+//   for (const npmPackage of InternnpmPackages) {
+//     //@digitalengineering
+//     //https://nuget.github.bhs-world.com
+//     //@actions/core
+//     npmSources.forEach(element => {
+//       if (npmPackage.name.includes(element)) {
+//         dependentProjects.push({
+//           name: npmPackage.name,
+//           currentVersion: npmPackage.currentVersion,
+//         });
+//       }
+//     })
     
-  }
+//   }
 
-  return dependentProjects;
-}
+//   return dependentProjects;
+// }
