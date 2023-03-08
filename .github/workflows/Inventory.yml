@@ -44,7 +44,6 @@ jobs:
           output-path: ./report.json
           sources: >-
             'https://api.nuget.org/v3/index.json' ||
-            'https://bhs-world.org' ||
             'Microsoft.AspNetCore.Razor'
           npmSources: >-
             '@actions/core' ||
