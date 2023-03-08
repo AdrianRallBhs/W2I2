@@ -43,7 +43,7 @@ jobs:
           branch-name: ${{ github.ref }}
           output-path: ./report.json
           sources: >-
-            'https://api.nuget.org/v3/index.json'
+            './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
           npmSources: >-
             '@actions/core' ||
             '@digitalenginnering' 
