@@ -42,8 +42,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           branch-name: ${{ github.ref }}
           output-path: ./report.json
-          sources: |
-            'https://api.nuget.org/v3/index.json'
+          sources: >-
+            'https://api.nuget.org/v3/index.json' ||
             'https://bhs-world.org'
 
       - name: Write report to file
