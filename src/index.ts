@@ -574,7 +574,7 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
   const externPackages: AllNugetPackageInfo[] = [];
 
   allPackages.forEach((packageInfo) => {
-    const isInternal = sourceList.some(source => packageInfo.packageName.includes(source));
+    const isInternal = sources.some(source => packageInfo.packageName.includes(source));
     if (isInternal) {
       internPackages.push(packageInfo);
     } else {
