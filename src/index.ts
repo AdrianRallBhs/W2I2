@@ -13,10 +13,9 @@ import * as child_process from 'child_process';
 // ==================================================================================================
 
 const updateStrategy = core.getInput('updateStrategy', { required: false }) || 'MINOR';
-const sources = core.getMultilineInput('sources', { required: true }).flatMap(s => s.split(/\r?\n/)).map(s => s.trim());
-const npmSources = core.getMultilineInput('npmSources', { required: false }).filter(s => s.trim() !== "");
+const sources = core.getMultilineInput('sources', { required: false }).flatMap(s => s.split(/\r?\n/)).map(s => s.trim());
+const npmSources = core.getMultilineInput('npmSources', { required: false }).flatMap(s => s.split(/\r?\n/)).map(s => s.trim());
 
-console.log(`Sources output is : ${sources}; \n 0: ${sources[0]} \n 1: ${sources[1]}`);
 
 interface Repository {
   orgName: any;
@@ -186,19 +185,32 @@ function getAllPackageInfo(): { intern: PackageInfooo[], extern: PackageInfooo[]
     const internPackages: PackageInfooo[] = [];
     const externPackages: PackageInfooo[] = [];
 
-    if (packageInfoList != null) {
-      packageInfoList.forEach((packageInfo: (PackageInfooo | null)) => {
-        if (packageInfo !== null) {
-          npmSources.forEach(element => {
-            if (packageInfo.name === element) {
-              internPackages.push(packageInfo);
-            } else {
-              externPackages.push(packageInfo);
-            }
-          })
-        }
-      });
-    }
+
+  packageInfoList.forEach((packageInfo: (PackageInfooo | null)) => {
+    if(packageInfo != null) {
+      const isInternal = sources.some(npmSources => npmSources.includes(packageInfo.name));
+
+      if (isInternal) {
+        internPackages.push(packageInfo);
+      } else {
+        externPackages.push(packageInfo);
+      }
+  }
+})
+  
+    // if (packageInfoList != null) {
+    //   packageInfoList.forEach((packageInfo: (PackageInfooo | null)) => {
+    //     if (packageInfo !== null) {
+    //       npmSources.forEach(element => {
+    //         if (packageInfo.name === element) {
+    //           internPackages.push(packageInfo);
+    //         } else {
+    //           externPackages.push(packageInfo);
+    //         }
+    //       })
+    //     }
+    //   });
+    // }
 
 
     return { intern: internPackages, extern: externPackages };
@@ -574,39 +586,18 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
   const internPackages: AllNugetPackageInfo[] = [];
   const externPackages: AllNugetPackageInfo[] = [];
 
-  const s = new Set(sources);
-
 
     allPackages.forEach((packageInfo) => {
         const isInternal = sources.some(source => source.includes(packageInfo.project));
-        //const bo = convertToBool(isInternal);
-    
-        console.log(`isInternal2 has value ${isInternal}`);
-        console.log(`sources has value ${sources[0]} and packageInfo is ${ packageInfo.project}`);
-        //const isInternal = sources.includes(packageInfo.project);
         if (isInternal) {
           internPackages.push(packageInfo);
         } else {
           externPackages.push(packageInfo);
         }
-        
-      //const isInternal2 = packageInfo.project === './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
-      //const isInternal2 = sources[0].search(packageInfo.project); //=== './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
-      
-  
 })
   
 
   return {intern: internPackages, extern: externPackages};
-}
-
-function convertToBool(input: number) {
-  if(input == 1) {
-    return true;
-  }
-  else {
-    return false;
-  }
 }
 
 

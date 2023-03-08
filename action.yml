@@ -23,14 +23,14 @@ inputs:
     default: 'MINOR'
   sources:
     description: 'List of sources seperated by new line'
-    required: true
+    required: false
     default: |
       './Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'
-      './Blazor5/BlazorApp5/BlazorApp5/BlazorApp5.csproj'
   npmSources:
     description: 'List of sources for npm seperated by new line'
     required: false
-    default: ''
+    default: |
+      '@actions/core'
 
 
 runs:
