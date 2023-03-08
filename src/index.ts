@@ -574,12 +574,14 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
   const externPackages: AllNugetPackageInfo[] = [];
 
   allPackages.forEach((packageInfo) => {
-    const isInternal = projectList.some(sources => packageInfo.project.endsWith(sources));
+    sources.forEach(element => {
+      const isInternal = packageInfo.project === element;
     if (isInternal) {
       internPackages.push(packageInfo);
     } else {
       externPackages.push(packageInfo);
     }
+    });
   });
 
   return {intern: internPackages, extern: externPackages};
