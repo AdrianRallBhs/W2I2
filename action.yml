@@ -24,9 +24,7 @@ inputs:
   sources:
     description: 'List of sources seperated by new line'
     required: false
-    default:
-      'https://api.nuget.org/v3/index.json'
-      'https://bhs-world.org'
+    default: ''
 
 
 runs:
