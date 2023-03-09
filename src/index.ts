@@ -427,7 +427,7 @@ try {
   execSync(`git clone ${repositoryUrl}`);
 
   process.chdir(repositoryDir);
-  execSync(`git checkout ${featureBranchName}`, { cwd: repositoryDir });
+  execSync(`git checkout ${featureBranchName}`, { shell: '/bin/bash' });
 
   // Run the function and write the output to a file
   const output = runRepoInfo();
