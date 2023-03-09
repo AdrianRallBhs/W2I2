@@ -420,15 +420,16 @@ const repositoryUrl = "https://github.com/AdrianRallBhs/W2I2.git";
 // Replace with the name of the branch you want to push to
 const featureBranchName = "feature-test";
 
+const repositoryDir = 'W2I2'; 
+
 try {
   // Clone the repository
   execSync(`git clone ${repositoryUrl}`);
 
-  // Change into the repository directory
-  execSync(`cd W2I2`);
-
-  // Checkout the feature branch
-  execSync(`git checkout ${featureBranchName}`);
+// Change into the repository directory
+execSync(`cd ${repositoryDir}`, { cwd: __dirname });
+// Checkout the feature branch
+execSync(`git checkout ${featureBranchName}`);
 
   // Run the function and write the output to a file
   const output = runRepoInfo();
