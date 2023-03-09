@@ -28,7 +28,7 @@ inputs:
   npmSources:
     description: 'List of sources for npm seperated by new line'
     required: false
-    default: 'https://registry.npmjs.org'
+    default: '"https://registry.npmjs.org/@actions/core/-/core-1.10.0.tgz'
   submoduleURLs:
     description: 'List of sources for npm seperated by new line'
     required: false
