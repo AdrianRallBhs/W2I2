@@ -47,6 +47,3 @@ jobs:
           # npmSources: >-
           #   '@actions/core' ||
           #   '@digitalenginnering' 
-
-      - name: Write report to file
-        run: echo '${{ steps.report.outputs.output }}' > ./report.json
