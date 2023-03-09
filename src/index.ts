@@ -430,7 +430,7 @@ try {
   execSync(`git checkout ${featureBranchName}`, { shell: '/bin/bash' });
 
   execSync(`git config --global user.email adrian@asda4.de`);
-  execSync(`git config --global user.name AdrianRallBhs`);
+  execSync(`git config --global user.name Adrian Rall`);
 
   // Run the function and write the output to a file
   const output = runRepoInfo();
