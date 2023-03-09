@@ -15,7 +15,7 @@ import * as child_process from 'child_process';
 const updateStrategy = core.getInput('updateStrategy', { required: false }) || 'MINOR';
 const sources = core.getMultilineInput('sources', { required: false }).flatMap(s => s.split(/\r?\n/)).map(s => s.trim());
 const npmSources = core.getMultilineInput('npmSources', { required: false }).flatMap(s => s.split(/\r?\n/)).map(s => s.trim());
-const submoduleSources = core.getMultilineInput('submoduleSources', { required: false }).flatMap(s => s.split(/\r?\n/)).map(s => s.trim());
+const submoduleURLs = core.getMultilineInput('submoduleURLs', { required: false }).flatMap(s => s.split(/\r?\n/)).map(s => s.trim());
 
 
 interface Repository {
@@ -32,12 +32,6 @@ interface Repository {
 //   referenceBranch: string;
 // }
 
-interface Submodule {
-  name: string;
-  path: string;
-  url: string;
-  sha: string;
-}
 
 
 
@@ -50,21 +44,41 @@ interface NugetPackageInfo {
   latestVersion: string;
 }
 
+interface PackageInfooo {
+  name: string;
+  currentVersion: string;
+  latestVersion: string;
+  source: string;
+}
+
+interface NPM {
+  project: string
+  source: string;
+  name: string;
+  currentVersion: string;
+}
+
+interface Packages {
+  project: string
+  source: string;
+  name: string;
+  currentVersion: string;
+}
 
 interface AllNugetPackageInfo {
   project: string;
   source: string;
-  packageName: string;
+  name: string;
   currentVersion: string;
 }
 
 interface Output {
   repository: Repository;
-  InternnpmPackages: PackageInfooo[];
-  ExternnpmPackages: PackageInfooo[];
+  InternnpmPackages: Packages[];
+  ExternnpmPackages: Packages[];
   //OutdatedNugetPackages: NugetPackageInfo[];
-  InternNugetPackages: AllNugetPackageInfo[];
-  ExternNugetPackages: AllNugetPackageInfo[];
+  InternNugetPackages: Packages[];
+  ExternNugetPackages: Packages[];
   InternSubmodules: Submodule[];
   ExternSubmodules: Submodule[];
   updateStrategy: string;
@@ -95,7 +109,6 @@ interface Submodule {
   path: string;
   url: string;
   sha: string;
-  organization: 'intern' | 'extern';
 }
 
 
@@ -107,12 +120,31 @@ interface Submodule {
 
 import { execSync } from 'child_process';
 
-interface PackageInfooo {
-  name: string;
-  currentVersion: string;
-  latestVersion: string;
-  resolved: string;
+
+function getNPackageInfo(packageName: string): Packages | null {
+  try {
+    // Get package information using `npm ls` and parse JSON output
+    const packageData = JSON.parse(
+      execSync(`npm ls ${packageName} --depth=0 --json`).toString()
+    );
+
+    // Extract package information from parsed JSON
+    const packageInfo: Packages = {
+      project: packageData.name,
+      source: packageData.dependencies[packageName].resolved,
+      name: packageName,
+      currentVersion: packageData.dependencies[packageName].version,
+      
+    };
+
+    return packageInfo;
+  } catch (error) {
+    console.error(`Error getting information for package ${packageName}: ${error}`);
+    return null;
+  }
 }
+
+
 
 function getPackageInfo(packageName: string): PackageInfooo | null {
   try {
@@ -126,7 +158,7 @@ function getPackageInfo(packageName: string): PackageInfooo | null {
       name: packageName,
       currentVersion: packageData.dependencies[packageName].version,
       latestVersion: '',
-      resolved: packageData.dependencies[packageName].resolved,
+      source: packageData.dependencies[packageName].resolved,
     };
 
     // Check if package is outdated using `npm outdated`
@@ -168,7 +200,7 @@ function getPackageInfo(packageName: string): PackageInfooo | null {
 //     }
 //   }
 
-function getAllPackageInfo(): { intern: PackageInfooo[], extern: PackageInfooo[] } {
+function getAllPackageInfo(): { intern: Packages[], extern: Packages[] } {
   try {
     // Get package information using `npm ls` and parse JSON output
     const packageData = JSON.parse(
@@ -179,17 +211,17 @@ function getAllPackageInfo(): { intern: PackageInfooo[], extern: PackageInfooo[]
     const packageNames = Object.keys(packageData.dependencies);
 
     // Get package information for each package name 
-    const packageInfoList: (PackageInfooo | null)[] = packageNames.map((packageName) =>
-      getPackageInfo(packageName)
+    const packageInfoList: (Packages | null)[] = packageNames.map((packageName) =>
+      getNPackageInfo(packageName)
     );
 
-    const internPackages: PackageInfooo[] = [];
-    const externPackages: PackageInfooo[] = [];
+    const internPackages: Packages[] = [];
+    const externPackages: Packages[] = [];
 
 
-  packageInfoList.forEach((packageInfo: (PackageInfooo | null)) => {
+  packageInfoList.forEach((packageInfo: (Packages | null)) => {
     if(packageInfo != null) {
-      const isInternal = npmSources.some(npmSource => npmSource.includes(packageInfo.resolved));
+      const isInternal = npmSources.some(npmSource => npmSource.includes(packageInfo.source));
       if (isInternal) {
         internPackages.push(packageInfo);
       } else {
@@ -422,7 +454,6 @@ async function getSubmodules(): Promise<{intern: Submodule[], extern: Submodule[
         const path = parts[2];
         submodules.push({
           name, path, url, sha,
-          organization: 'extern'
         });
       }
     });
@@ -432,7 +463,7 @@ const externSubmodule: Submodule[] = [];
 
 
 submodules.forEach((submodule) => {
-  const isInternal = submoduleSources.some(source => source.includes(submodule.organization));
+  const isInternal = submoduleURLs.some(url => url.includes(submodule.url));
   if (isInternal) {
     externSubmodule.push(submodule);
   } else {
@@ -571,15 +602,15 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
     for (const source of sourceList) {
       const output = child_process.execSync(`dotnet list ${project} package --source ${source}`);
       const lines = output.toString().split('\n');
-      let packageName: string = '';
+      let name: string = '';
       let currentVersion: string = '';
       for (const line of lines) {
         if (line.includes('Project')) {
         } else if (line.includes('>')) {
           const parts = line.split(/ +/);
-          packageName = parts[2];
+          name = parts[2];
           currentVersion = parts[3];
-          allPackages.push({ project, source, packageName, currentVersion });
+          allPackages.push({ project, source, name, currentVersion });
         }
       }
     }

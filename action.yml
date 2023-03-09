@@ -29,7 +29,7 @@ inputs:
     description: 'List of sources for npm seperated by new line'
     required: false
     default: ''
-  submoduleSources:
+  submoduleURLs:
     description: 'List of sources for npm seperated by new line'
     required: false
     default: ''
