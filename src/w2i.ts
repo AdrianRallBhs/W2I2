@@ -30,9 +30,9 @@ try {
   execSync(`git remote set-url origin ${repositoryUrl}`);
 
   // Commit and push the changes to the feature branch
-  execSync(`git add .`);
-  execSync(`git commit -m "Add output to output.json"`);
-  execSync(`git push origin ${featureBranchName}`);
+//   execSync(`git add .`);
+//   execSync(`git commit -m "Add output to output.json"`);
+//   execSync(`git push origin ${featureBranchName}`);
 } catch (error) {
   console.error(error);
 }
