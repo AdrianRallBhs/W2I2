@@ -44,12 +44,12 @@ interface NugetPackageInfo {
   latestVersion: string;
 }
 
-interface PackageInfooo {
-  name: string;
-  currentVersion: string;
-  latestVersion: string;
-  source: string;
-}
+// interface PackageInfooo {
+//   name: string;
+//   currentVersion: string;
+//   latestVersion: string;
+//   source: string;
+// }
 
 interface NPM {
   project: string
@@ -74,8 +74,8 @@ interface AllNugetPackageInfo {
 
 interface Output {
   repository: Repository;
-  InternnpmPackages: Packages[];
-  ExternnpmPackages: Packages[];
+  InternNpmPackages: Packages[];
+  ExternNpmPackages: Packages[];
   //OutdatedNugetPackages: NugetPackageInfo[];
   InternNugetPackages: Packages[];
   ExternNugetPackages: Packages[];
@@ -146,36 +146,36 @@ function getNPackageInfo(packageName: string): Packages | null {
 
 
 
-function getPackageInfo(packageName: string): PackageInfooo | null {
-  try {
-    // Get package information using `npm ls` and parse JSON output
-    const packageData = JSON.parse(
-      execSync(`npm ls ${packageName} --depth=0 --json`).toString()
-    );
+// function getPackageInfo(packageName: string): PackageInfooo | null {
+//   try {
+//     // Get package information using `npm ls` and parse JSON output
+//     const packageData = JSON.parse(
+//       execSync(`npm ls ${packageName} --depth=0 --json`).toString()
+//     );
 
-    // Extract package information from parsed JSON
-    const packageInfo: PackageInfooo = {
-      name: packageName,
-      currentVersion: packageData.dependencies[packageName].version,
-      latestVersion: '',
-      source: packageData.dependencies[packageName].resolved,
-    };
+//     // Extract package information from parsed JSON
+//     const packageInfo: PackageInfooo = {
+//       name: packageName,
+//       currentVersion: packageData.dependencies[packageName].version,
+//       latestVersion: '',
+//       source: packageData.dependencies[packageName].resolved,
+//     };
 
-    // Check if package is outdated using `npm outdated`
-    const outdatedData = execSync(`npm outdated ${packageName} --json`).toString();
-    const outdatedInfo = JSON.parse(outdatedData);
-    if (outdatedInfo[packageName]) {
-      packageInfo.latestVersion = outdatedInfo[packageName].latest;
-    } else {
-      packageInfo.latestVersion = packageInfo.currentVersion;
-    }
+//     // Check if package is outdated using `npm outdated`
+//     const outdatedData = execSync(`npm outdated ${packageName} --json`).toString();
+//     const outdatedInfo = JSON.parse(outdatedData);
+//     if (outdatedInfo[packageName]) {
+//       packageInfo.latestVersion = outdatedInfo[packageName].latest;
+//     } else {
+//       packageInfo.latestVersion = packageInfo.currentVersion;
+//     }
 
-    return packageInfo;
-  } catch (error) {
-    console.error(`Error getting information for package ${packageName}: ${error}`);
-    return null;
-  }
-}
+//     return packageInfo;
+//   } catch (error) {
+//     console.error(`Error getting information for package ${packageName}: ${error}`);
+//     return null;
+//   }
+// }
 
 
 //   function getAllPackageInfo(): PackageInfooo[] {
@@ -326,17 +326,17 @@ async function listNpmRegistries(): Promise<string[]> {
 }
 
 
-listNpmRegistries()
-  .then(registries => console.log(registries))
-  .catch(err => console.error(err));
+// listNpmRegistries()
+//   .then(registries => console.log(registries))
+//   .catch(err => console.error(err));
 
-findALLCSPROJmodules()
-  .then(result => console.log(result))
-  .catch(err => console.log(err));
+// findALLCSPROJmodules()
+//   .then(result => console.log(result))
+//   .catch(err => console.log(err));
 
-getDotnetSources()
-  .then(result => console.log(result))
-  .catch(err => console.log(err));
+// getDotnetSources()
+//   .then(result => console.log(result))
+//   .catch(err => console.log(err));
 
 
 
@@ -363,8 +363,8 @@ export async function runRepoInfo() {
       license: '',
       sha: commit.sha,
     },
-    InternnpmPackages: [],
-    ExternnpmPackages: [],
+    InternNpmPackages: [],
+    ExternNpmPackages: [],
    // OutdatedNugetPackages: [],
     InternNugetPackages: [],
     ExternNugetPackages: [],
@@ -387,8 +387,8 @@ export async function runRepoInfo() {
   output.repository.license = repository.license?.name || '';
   // const packageInfoList = getAllPackageInfo();
   // console.log(`New bla bla package info list: ${JSON.stringify(packageInfoList, null, 2)}`)
-  output.InternnpmPackages = await getAllPackageInfo().intern;
-  output.ExternnpmPackages = await getAllPackageInfo().extern;
+  output.InternNpmPackages = await getAllPackageInfo().intern;
+  output.ExternNpmPackages = await getAllPackageInfo().extern;
   // output.OutdatedNugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
   output.InternNugetPackages = await (await getAllNuGetPackages(dotNetProjects, ListOfSources)).intern;
   output.ExternNugetPackages = await (await getAllNuGetPackages(dotNetProjects, ListOfSources)).extern;
