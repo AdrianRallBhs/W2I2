@@ -1,7 +1,7 @@
 import { execSync } from "child_process";
 import * as fs from 'fs';
 
-const repositoryUrl = "https://github.com/AdrianRallBhs/W2I2.git";
+const repositoryUrl = "https://AdrianRall:^R4fJ23;GEW(github.com/AdrianRallBhs/W2I2.githttps://github.com/AdrianRallBhs/W2I2.git";
 
 // Replace with the name of the branch you want to push to
 const featureBranchName = "feature-test";
