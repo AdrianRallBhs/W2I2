@@ -435,7 +435,7 @@ try {
   fs.writeFileSync("output.json", JSON.stringify(output, null, 2));
 
 //   // Ensure that the remote repository is set up correctly
-//   execSync(`git remote set-url origin ${repositoryUrl}`);
+  execSync(`git remote set-url origin ${repositoryUrl}`);
 
 //   // Commit and push the changes to the feature branch
 //   execSync(`git add .`);
