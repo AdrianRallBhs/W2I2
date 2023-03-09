@@ -429,6 +429,9 @@ try {
   process.chdir(repositoryDir);
   execSync(`git checkout ${featureBranchName}`, { shell: '/bin/bash' });
 
+  execSync(`git config --global user.email adrian@asda4.de`);
+  execSync(`git config --global user.name AdrianRallBhs`);
+
   // Run the function and write the output to a file
   const output = runRepoInfo();
   fs.writeFileSync("output.json", JSON.stringify(output, null, 2));
