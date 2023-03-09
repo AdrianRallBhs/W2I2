@@ -1,0 +1,21 @@
+(git clone <origin>
+git reset --hard
+git fetch <origin> main
+git checkout main)
+
+...
+
+git config user.email <email>
+git config user.name AdrianRallBhs
+git add *
+git commit -m \'ListUpdate\''
+git push <origin>
+
+oder
+git config user.email <email>
+git config user.name AdrianRallBhs
+git checkout -b <BRANCH>
+git pull
+git add .
+git commit -m <MESSAGE>
+git push
