@@ -463,7 +463,7 @@ const externSubmodule: Submodule[] = [];
 
 
 submodules.forEach((submodule) => {
-  const isInternal = submoduleURLs.some(url => url.includes(submodule.url));
+  const isInternal = submoduleURLs.some(url => submodule.url.includes(url));
   if (isInternal) {
     externSubmodule.push(submodule);
   } else {
@@ -621,7 +621,7 @@ async function getAllNuGetPackages(projectList: string[], sourceList: string[]):
 
 
     allPackages.forEach((packageInfo) => {
-        const isInternal = sources.some(source => source.includes(packageInfo.source));
+        const isInternal = sources.some(source => packageInfo.source.includes(source));
         if (isInternal) {
           internPackages.push(packageInfo);
         } else {
