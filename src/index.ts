@@ -418,7 +418,7 @@ const repositoryDir = "W2I2";
 
 const email = "adrian@asda4.de"
 
-const name = "@AdrianRallBhs"
+const name = "AdrianRallBhs"
 
 try {
   // Clone the repository
