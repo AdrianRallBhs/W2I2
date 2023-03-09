@@ -28,11 +28,11 @@ inputs:
   npmSources:
     description: 'List of sources for npm seperated by new line'
     required: false
-    default: ''
+    default: 'https://api.nuget.org/v3/index.json'
   submoduleURLs:
     description: 'List of sources for npm seperated by new line'
     required: false
-    default: ''
+    default: 'https://registry.npmjs.org'
 
 
 
