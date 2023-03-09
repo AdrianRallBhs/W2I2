@@ -24,15 +24,15 @@ inputs:
   sources:
     description: 'List of sources for nuget seperated by new line'
     required: false
-    default: ''
+    default: 'https://api.nuget.org/v3/index.json'
   npmSources:
     description: 'List of sources for npm seperated by new line'
     required: false
-    default: 'https://api.nuget.org/v3/index.json'
+    default: 'https://registry.npmjs.org'
   submoduleURLs:
     description: 'List of sources for npm seperated by new line'
     required: false
-    default: 'https://registry.npmjs.org'
+    default: ''
 
 
 
