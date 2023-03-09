@@ -431,7 +431,7 @@ try {
   execSync(`git config --global user.name "${name}"`);
 
   // Run the function and write the output to a file
-  const output = runRepoInfo();
+  const output = JSON.stringify(runRepoInfo(), null, 2)
   fs.writeFileSync("output.json", JSON.stringify(output, null, 2));
 
   // Ensure that the remote repository is set up correctly
