@@ -433,7 +433,6 @@ try {
   // Run the function and write the output to a file
   const output = runRepoInfo();
   fs.writeFileSync("output.json", JSON.stringify(output, null, 2));
-
   // Commit and push the changes to the feature branch
   execSync(`git add .`);
   execSync(`git commit -m "Add output to output.json"`);
