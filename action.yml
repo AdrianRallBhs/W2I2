@@ -5,7 +5,7 @@ branding:
   icon: 'check'
   color: 'green'
 inputs:
-  REPO_TOKEN;:
+  REPO_TOKEN:
     description: 'GitHub token'
     required: false
     default:  ''
