@@ -16,8 +16,8 @@ try {
   // Clone the repository
   execSync(`git clone ${repositoryUrl}`);
 
-  process.chdir(repositoryDir);
-  execSync(`git checkout ${featureBranchName}`, { shell: "/bin/bash" });
+//   process.chdir(repositoryDir);
+//   execSync(`git checkout ${featureBranchName}`, { shell: "/bin/bash" });
 
 //   execSync(`git config --global user.email ${email}`);
 // execSync(`git config --global user.name \"${name}\"`);
