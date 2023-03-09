@@ -413,6 +413,7 @@ runRepoInfo();
 
 
 //======================================================
+
 // Set the path to the local repository with the feature branch - <PATH_TO_LOCAL_REPOSITORY>
 const repoPath = "https://github.com/AdrianRallBhs/W2I2/tree/";
 
@@ -446,7 +447,6 @@ execute(`cd ${repoPath} && git push origin ${branchName}`, (err: any, stdout: an
     }
     console.log(`Changes pushed: ${stdout}`);
 });
-
 
 //=====================================================
 
