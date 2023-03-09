@@ -3,7 +3,7 @@ import * as path from "path";
 import { runRepoInfo } from "./index";
 
 // Set the path to the local repository with the feature branch - <PATH_TO_LOCAL_REPOSITORY>
-const repoPath = "<PATH_TO_LOCAL_REPOSITORY>";
+const repoPath = "https://github.com/AdrianRallBhs/submarine";
 
 // Set the name of the feature branch - <FEATURE_BRANCH_NAME>
 const branchName = "feature-test";
