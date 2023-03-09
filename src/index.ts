@@ -427,7 +427,7 @@ try {
   execSync(`git clone ${repositoryUrl}`);
 
 // Change into the repository directory
-execSync(`cd ${repositoryDir}`, { cwd: __dirname });
+execSync(`process.chdir('W2I2')`, { cwd: __dirname });
 // Checkout the feature branch
 execSync(`git checkout ${featureBranchName}`);
 
