@@ -414,8 +414,9 @@ runRepoInfo();
 
 //======================================================
 
+const benutername = "Adrian Rall";
 // Replace with the URL of the repository you want to clone
-const repositoryUrl = "https://github.com/AdrianRallBhs/W2I2.git";
+const repositoryUrl = `https://${benutername}:${token}@github.com/AdrianRallBhs/W2I2.git`;
 
 // Replace with the name of the branch you want to push to
 const featureBranchName = "feature-test";
