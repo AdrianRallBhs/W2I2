@@ -427,20 +427,20 @@ try {
   process.chdir(repositoryDir);
   execSync(`git checkout ${featureBranchName}`, { shell: "/bin/bash" });
 
-  execSync(`git config --global user.email ${email}`);
-  execSync(`git config --global user.name ${name}`);
+//   execSync(`git config --global user.email ${email}`);
+//   execSync(`git config --global user.name ${name}`);
 
-  // Run the function and write the output to a file
-  const output = " Hallo "
-  fs.writeFileSync("output.json", JSON.stringify(output, null, 2));
+//   // Run the function and write the output to a file
+//   const output = " Hallo "
+//   fs.writeFileSync("output.json", JSON.stringify(output, null, 2));
 
-  // Ensure that the remote repository is set up correctly
-  execSync(`git remote set-url origin ${repositoryUrl}`);
+//   // Ensure that the remote repository is set up correctly
+//   execSync(`git remote set-url origin ${repositoryUrl}`);
 
-  // Commit and push the changes to the feature branch
-  execSync(`git add .`);
-  execSync(`git commit -m "Add output to output.json"`);
-  execSync(`git push origin ${featureBranchName}`);
+//   // Commit and push the changes to the feature branch
+//   execSync(`git add .`);
+//   execSync(`git commit -m "Add output to output.json"`);
+//   execSync(`git push origin ${featureBranchName}`);
 } catch (error) {
   console.error(error);
 }
