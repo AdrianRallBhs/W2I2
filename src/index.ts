@@ -398,14 +398,9 @@ export async function runRepoInfo() {
   // output.NugetDependencies = await getDependentProjects(output.InternNugetPackages);
   // output.NpmDependencies = await getNpmDependentProjects(output.InternnpmPackages);
 
-
-  // Write output to file
-  const outputPath = core.getInput('output-path');
   try {
     core.info(JSON.stringify(output, null, 2))
     const ouputstring: string = JSON.stringify(output, null, 2);
-    fs.writeFileSync(outputPath, ouputstring);
-    fs.closeSync(fs.openSync(outputPath, 'r'));
 
   } catch (error) {
     core.setFailed("WriteFileSync ist falsch")
