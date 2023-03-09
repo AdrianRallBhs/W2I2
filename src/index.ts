@@ -414,40 +414,34 @@ runRepoInfo();
 
 //======================================================
 
-// Set the path to the local repository with the feature branch - <PATH_TO_LOCAL_REPOSITORY>
-const repoPath = "https://github.com/AdrianRallBhs/W2I2/tree/";
+const featureBranch = 'feature-test';
 
-// Set the name of the feature branch - <FEATURE_BRANCH_NAME>
-const branchName = "feature-test";
+// Pfad zum Zielverzeichnis
+const targetDirectory = 'https://github.com/AdrianRallBhs/W2I2';
 
-// Set the path to the file where you want to write the result of runRepoInfo function - <PATH_TO_FILE_IN_FEATURE_BRANCH>
-const filePath = "README.md";
+// Wechseln in das Zielverzeichnis
+process.chdir(targetDirectory);
 
-// Get the result of runRepoInfo function
-const result = runRepoInfo();
+// Checkout des Feature-Branches
+execSync(`git checkout ${featureBranch}`);
 
-// Write the result to a file
-fs.writeFileSync(path.join(repoPath, filePath), JSON.stringify(result, null, 2));
+// Ausführen des Codes und Schreiben in eine temporäre Datei
+const code = `/* hier dein Code */`;
+const tempFilePath = path.join(__dirname, 'temp.ts');
+fs.writeFileSync(tempFilePath, code);
 
-// Commit the changes
-const { execute } = require("child_process");
-execute(`cd ${repoPath} && git add ${filePath} && git commit -m "Add result of runRepoInfo function"`, (err: any, stdout: any, stderr: any) => {
-    if (err) {
-        console.log(`Error committing changes: ${err}`);
-        return;
-    }
-    console.log(`Changes committed: ${stdout}`);
-});
+// Ausführen von TypeScript auf der temporären Datei und Schreiben des Ergebnisses in eine temporäre JSON-Datei
+const tempJsonFilePath = path.join(__dirname, 'temp.json');
+execSync(`npx tsc --esModuleInterop ${tempFilePath} --outFile ${tempJsonFilePath}`);
+const tempJsonData = fs.readFileSync(tempJsonFilePath);
 
-// Push the changes to the remote repository
-execute(`cd ${repoPath} && git push origin ${branchName}`, (err: any, stdout: any, stderr: any) => {
-    if (err) {
-        console.log(`Error pushing changes: ${err}`);
-        return;
-    }
-    console.log(`Changes pushed: ${stdout}`);
-});
+// Löschen der temporären Dateien
+fs.unlinkSync(tempFilePath);
+fs.unlinkSync(tempJsonFilePath);
 
+// Schreiben des Ergebnisses in die README.md-Datei des Feature-Branches
+const featureBranchReadmePath = path.join(targetDirectory, 'README.md');
+fs.writeFileSync(featureBranchReadmePath, tempJsonData);
 //=====================================================
 
 
