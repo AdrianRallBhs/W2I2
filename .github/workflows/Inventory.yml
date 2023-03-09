@@ -37,7 +37,7 @@ jobs:
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npm run-script-script ${{ env.REPO_TOKEN }}
+          npm run-script ${{ env.REPO_TOKEN }}
 
 
       - name: Generate Report
