@@ -414,34 +414,33 @@ runRepoInfo();
 
 //======================================================
 
-const featureBranch = 'feature-test';
+// Replace with the URL of the repository you want to clone
+const repositoryUrl = "https://github.com/AdrianRallBhs/W2I2.git";
 
-// Pfad zum Zielverzeichnis
-const targetDirectory = 'https://github.com/AdrianRallBhs/W2I2';
+// Replace with the name of the branch you want to push to
+const featureBranchName = "feature-test";
 
-// Wechseln in das Zielverzeichnis
-process.chdir(targetDirectory);
+try {
+  // Clone the repository
+  execSync(`git clone ${repositoryUrl}`);
 
-// Checkout des Feature-Branches
-execSync(`git checkout ${featureBranch}`);
+  // Change into the repository directory
+  execSync(`cd W2I2`);
 
-// Ausführen des Codes und Schreiben in eine temporäre Datei
-const code = `/* hier dein Code */`;
-const tempFilePath = path.join(__dirname, 'temp.ts');
-fs.writeFileSync(tempFilePath, code);
+  // Checkout the feature branch
+  execSync(`git checkout ${featureBranchName}`);
 
-// Ausführen von TypeScript auf der temporären Datei und Schreiben des Ergebnisses in eine temporäre JSON-Datei
-const tempJsonFilePath = path.join(__dirname, 'temp.json');
-execSync(`npx tsc --esModuleInterop ${tempFilePath} --outFile ${tempJsonFilePath}`);
-const tempJsonData = fs.readFileSync(tempJsonFilePath);
+  // Run the function and write the output to a file
+  const output = runRepoInfo();
+  fs.writeFileSync("output.json", JSON.stringify(output, null, 2));
 
-// Löschen der temporären Dateien
-fs.unlinkSync(tempFilePath);
-fs.unlinkSync(tempJsonFilePath);
-
-// Schreiben des Ergebnisses in die README.md-Datei des Feature-Branches
-const featureBranchReadmePath = path.join(targetDirectory, 'README.md');
-fs.writeFileSync(featureBranchReadmePath, tempJsonData);
+  // Commit and push the changes to the feature branch
+  execSync(`git add .`);
+  execSync(`git commit -m "Add output to output.json"`);
+  execSync(`git push origin ${featureBranchName}`);
+} catch (error) {
+  console.error(error);
+}
 //=====================================================
 
 
