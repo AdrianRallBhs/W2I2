@@ -14,7 +14,7 @@ const name = "AdrianRallBhs" || "Adrian Rall";
 
 try {
   // Clone the repository
-  execSync(`git clone ${repositoryUrl}`);
+//   execSync(`git clone ${repositoryUrl}`);
 
 //   process.chdir(repositoryDir);
 //   execSync(`git checkout ${featureBranchName}`, { shell: "/bin/bash" });
