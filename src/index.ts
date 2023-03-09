@@ -270,13 +270,7 @@ interface NpmDependentProject {
   currentVersion: string;
 }
 
-import { Octokit } from "@octokit/rest";
-import path from 'path';
-const token = process.env.REPO_TOKEN;
-
-const octokit = new Octokit({
-  auth: token,
-});
+;
 
 //Hier werden alle Repositories aufgelistet, 
 //die das Repository "test-repo" als Abhängigkeit in ihrer 
@@ -414,9 +408,10 @@ runRepoInfo();
 
 //======================================================
 
-const benutername = "Adrian Rall";
+
+
 // Replace with the URL of the repository you want to clone
-const repositoryUrl = `https://${benutername}:${token}@github.com/AdrianRallBhs/W2I2.git`;
+const repositoryUrl = "https://github.com/AdrianRallBhs/W2I2.git";
 
 // Replace with the name of the branch you want to push to
 const featureBranchName = "feature-test";
@@ -430,7 +425,7 @@ try {
   process.chdir(repositoryDir);
   execSync(`git checkout ${featureBranchName}`, { shell: '/bin/bash' });
 
-  execSync(`git config --global user.email adrian@asda4.de`);
+  execSync(`git config --global user.email "adrian@asda4.de"`);
   execSync(`git config --global user.name "Adrian Rall"`);
 
   // Run the function and write the output to a file
@@ -443,6 +438,9 @@ try {
 } catch (error) {
   console.error(error);
 }
+
+
+
 //=====================================================
 
 
