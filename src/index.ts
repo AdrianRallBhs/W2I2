@@ -426,10 +426,8 @@ try {
   // Clone the repository
   execSync(`git clone ${repositoryUrl}`);
 
-// Change into the repository directory
-execSync(`process.chdir('W2I2')`, { cwd: __dirname });
-// Checkout the feature branch
-execSync(`git checkout ${featureBranchName}`);
+  process.chdir(repositoryDir);
+  execSync(`git checkout ${featureBranchName}`, { cwd: repositoryDir });
 
   // Run the function and write the output to a file
   const output = runRepoInfo();
