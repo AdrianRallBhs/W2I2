@@ -33,6 +33,12 @@ jobs:
       - name: Build
         run: npm run build --if-present
 
+      - name: Run script
+        env:
+          REPO_TOKEN;: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run-script-script ${{ env.REPO_TOKEN; }}
+
 
       - name: Generate Report
         uses: ./

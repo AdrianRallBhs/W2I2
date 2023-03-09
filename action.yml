@@ -5,10 +5,10 @@ branding:
   icon: 'check'
   color: 'green'
 inputs:
-  github-token:
+  REPO_TOKEN;:
     description: 'GitHub token'
     required: false
-    default:  ${{ secrets.GITHUB_TOKEN }}
+    default:  ''
   branch-name:
     description: 'Name of the branch to get information for'
     required: false
@@ -33,6 +33,7 @@ inputs:
     description: 'List of sources for npm seperated by new line'
     required: false
     default: ''
+
 
 
 

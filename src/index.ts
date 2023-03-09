@@ -5,7 +5,7 @@ const packageJson = require('../package.json');
 import { promisify } from 'util';
 import { exec, spawn } from 'child_process';
 import * as child_process from 'child_process';
-
+import { env } from 'process';
 
 // ======================geht nicht wie gewünscht==================================
 
@@ -272,7 +272,7 @@ interface NpmDependentProject {
 
 import { Octokit } from "@octokit/rest";
 import path from 'path';
-const token = core.getInput("github-token");
+const token = process.env.REPO_TOKEN;
 
 const octokit = new Octokit({
   auth: token,
