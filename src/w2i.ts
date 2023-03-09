@@ -19,8 +19,8 @@ try {
   process.chdir(repositoryDir);
   execSync(`git checkout ${featureBranchName}`, { shell: "/bin/bash" });
 
-  execSync(`git config --global user.email ${email}`);
-execSync(`git config --global user.name \"${name}\"`);
+//   execSync(`git config --global user.email ${email}`);
+// execSync(`git config --global user.name \"${name}\"`);
 
   // Run the function and write the output to a file
   const output = " Hallo "
