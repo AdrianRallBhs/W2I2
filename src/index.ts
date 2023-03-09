@@ -414,7 +414,7 @@ runRepoInfo();
 
 //======================================================
 // Set the path to the local repository with the feature branch - <PATH_TO_LOCAL_REPOSITORY>
-const repoPath = "https://github.com/AdrianRallBhs/submarine/blob/";
+const repoPath = "https://github.com/AdrianRallBhs/W2I2/tree/";
 
 // Set the name of the feature branch - <FEATURE_BRANCH_NAME>
 const branchName = "feature-test";
