@@ -120,64 +120,60 @@
 //   }
 
 
-import { createAppAuth } from "@octokit/auth-app";
-import { Octokit } from "@octokit/rest";
 import { execSync } from "child_process";
 import { runRepoInfo } from "./index";
 
 // Funktion zum Klonen, Aktualisieren und Pushen des Repositories
 async function updateRepository(token: string, repoName: string) {
-  // GitHub-Authentifizierung mit der App durchführen
-  const auth = createAppAuth({
-    appId: "YOUR_APP_ID",
-    privateKey: "YOUR_APP_PRIVATE_KEY",
-    installationId: "YOUR_INSTALLATION_ID",
-  });
-  const authHeaders = await auth({ type: "installation" });
-
-  // Überprüfen, welcher Token-Typ verwendet wird
-  let gitToken = "";
-  if (token.startsWith("ghp_")) {
-    gitToken = `https://${token}:x-oauth-basic@github.com`;
-  } else if (token.startsWith("ghs_")) {
-    gitToken = `https://x-access-token:${token}@github.com`;
-  } else {
-    console.log("Ungültiger Token");
-    return;
-  }
-
-  // Repository klonen
-  execSync(`git clone ${gitToken}/${repoName}.git`);
-
-  // In das Repository-Verzeichnis wechseln
-  execSync(`cd ${repoName}`);
-
-  // Sicherstellen, dass der Branch "main" verwendet wird
-  execSync(`git checkout main`);
-
-  // Aktualisierungen vom Remote-Repository abrufen
-  execSync(`git pull`);
-
-  // Inhalt in Datei schreiben
-  const fileContent = runRepoInfo();
-  const fileName = "myfile.txt";
-  execSync(`echo '${fileContent}' > ${fileName}`);
-
-  // Änderungen hinzufügen
-  execSync(`git add ${fileName}`);
-
-  // Commit-Nachricht erstellen
-  const commitMessage = "Aktualisiere Datei mit neuen Inhalten";
-
-  // Änderungen committen
-  execSync(`git commit -m "${commitMessage}"`);
-
-  // Änderungen pushen
-  execSync(`git push`);
-
-  // Weitere Operationen mit der GitHub-App durchführen
-  // ...
-}
+    // Überprüfen, welcher Token-Typ verwendet wird
+    let gitToken = "";
+    if (token.startsWith("ghp_")) {
+      gitToken = `https://${token}:x-oauth-basic@github.com`;
+    } else if (token.startsWith("ghs_")) {
+      gitToken = `https://x-access-token:${token}@github.com`;
+    } else {
+      console.log("Ungültiger Token");
+      return;
+    }
+  
+    const branchName = "feature-test";
+  
+    // Repository klonen
+    execSync(`git clone ${gitToken}/${repoName}.git`);
+  
+    // In das Repository-Verzeichnis wechseln
+    execSync(`cd ${repoName}`);
+  
+    // Sicherstellen, dass der Branch "main" verwendet wird
+    execSync(`git checkout main`);
+  
+    // Branch "feature-test" erstellen oder zu ihm wechseln
+    const createBranchCmd = `git branch ${branchName} origin/${branchName} || git checkout ${branchName}`;
+    execSync(createBranchCmd);
+  
+    // Aktualisierungen vom Remote-Repository abrufen
+    execSync(`git pull`);
+  
+    // Inhalt in Datei schreiben
+    const fileContent = runRepoInfo();
+    const fileName = "myfile.txt";
+    execSync(`echo '${fileContent}' > ${fileName}`);
+  
+    // Änderungen hinzufügen
+    execSync(`git add ${fileName}`);
+  
+    // Commit-Nachricht erstellen
+    const commitMessage = "Aktualisiere Datei mit neuen Inhalten";
+  
+    // Änderungen committen
+    execSync(`git commit -m "${commitMessage}"`);
+  
+    // Änderungen auf Branch "feature-test" pushen
+    execSync(`git push origin ${branchName}`);
+  
+    // Weitere Operationen mit dem Repository durchführen
+    // ...
+  } 
 
 // Beispielaufruf
 const token = "ghp_1234567890abcdefghijklmnopqrstuvwxyz";
